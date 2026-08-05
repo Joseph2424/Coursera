@@ -1,0 +1,161 @@
+/* Layout */
+.page {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f7fa;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.sidebar {
+  width: 220px;
+  background: #2d3748;
+  color: #fff;
+  padding: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin-bottom: 15px;
+}
+
+.sidebar a {
+  color: #cbd5e0;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.sidebar a.active {
+  color: #fff;
+  font-weight: bold;
+}
+
+.content {
+  padding: 30px;
+}
+
+/* Cards */
+.card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #fff;
+}
+
+.btn-primary {
+  background: #3182ce;
+}
+
+.btn-primary:hover {
+  background: #2b6cb0;
+}
+
+.btn-success {
+  background: #38a169;
+}
+
+.btn-success:hover {
+  background: #2f855a;
+}
+
+/* Table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 10px;
+  background: #e2e8f0;
+}
+
+.table td {
+  padding: 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table tr:hover {
+  background: #edf2f7;
+}
+
+/* Form */
+.form-label {
+  font-weight: 600;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e0;
+  margin-bottom: 10px;
+}
+
+/* Page Title */
+.page-title {
+  margin-bottom: 20px;
+}
+
+/* Responsive Event Grid */
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* Event Card */
+.event-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.event-card h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.event-card p {
+  margin: 4px 0;
+}
+
+.event-card .btn {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+.dashboard-header {
+  margin-bottom: 25px;
+}
+
+.dashboard-header h2 {
+  margin: 0;
+}
+
+.dashboard-header p {
+  color: #4a5568;
+  margin-top: 4px;
+}
+
+/* Mobile Tweaks */
+@media (max-width: 480px) {
+  .event-card {
+    padding: 16px;
+  }
+}

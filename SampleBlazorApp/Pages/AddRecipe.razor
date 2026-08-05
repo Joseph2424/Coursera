@@ -1,0 +1,35 @@
+@page "/addrecipe"
+@inject NavigationManager NavigationManager;
+
+<h1>Add New Recipe</h1>
+<input @bind="newRecipe.Title" placeholder="Recipe Title" class="form-control mb-2" />
+<input @bind="newIngredient" placeholder="Ingredient" class="form-control mb-2" />
+<button class="btn btn-secondary mb-2" @onclick="AddIngredient">Add Ingredient</button>
+<ul>
+    @foreach (string ingredient in newRecipe.Ingredients)
+    {
+        <li>@ingredient</li>
+    }
+</ul>
+<button class="btn btn-primary" @onclick="SaveRecipe">Save Recipe</button>
+@code {
+    private Recipe newRecipe = new Recipe();
+
+    private string newIngredient = "";
+
+    protected override void OnInitialized()
+    {
+        newRecipe.Ingredients = new List<string>();
+    }
+
+    private void AddIngredient()
+    {
+        newRecipe.Ingredients.Add(newIngredient);
+        newIngredient = "";
+    }
+
+    private void SaveRecipe()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

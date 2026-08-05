@@ -1,0 +1,25 @@
+﻿<h3>Task</h3>
+<p>@Title</p>
+<button class="btn btn-success" @onclick="CompleteTask">Complete Task</button>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> OnTaskCompleted { get; set; }
+
+    private void CompleteTask()
+    {
+        OnTaskCompleted.InvokeAsync(Title);
+    }
+    protected override void OnParametersSet()
+    {
+        if (string.IsNullOrEmpty(Title))
+        {
+            throw new ArgumentException("Title parameter cannot be null or empty.");
+        }
+
+        Console.WriteLine($"TaskDisplay component initialized with Title: {Title}");
+    }
+}

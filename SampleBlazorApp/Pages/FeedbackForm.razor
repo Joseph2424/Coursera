@@ -1,0 +1,38 @@
+@page "/feedback"
+@using Models;
+@inject SampleBlazorApp.Services.FeedbackService FeedbackService;
+
+<EditForm id="feedbackForm" Model="FeedbackModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="name">Name</label>
+        <InputText id="name" class="form-control" @bind-Value="FeedbackModel.Name" />
+        <ValidationMessage For="@(() => FeedbackModel.Name)" />
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <InputText id="email" class="form-control" @bind-Value="FeedbackModel.Email" />
+        <ValidationMessage For="@(() => FeedbackModel.Email)" />
+    </div>
+
+    <div class="form-group">
+        <label for="comment">Comment</label>
+        <InputTextArea id="comment" class="form-control" @bind-Value="FeedbackModel.Comment" />
+        <ValidationMessage For="@(() => FeedbackModel.Comment)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+
+</EditForm>
+
+@code {
+    private Feedback FeedbackModel { get; set; } = new Feedback();
+
+    private async Task HandleValidSubmit()
+    {
+        await FeedbackService.SetJsonAsync("feedback", FeedbackModel);
+    }
+}

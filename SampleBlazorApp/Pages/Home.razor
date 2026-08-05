@@ -1,0 +1,55 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+@foreach (Recipe recipe in recipes)
+{
+    <div class="recipe">
+        <h2>@recipe.Title</h2>
+        <h1>@recipe.Description</h1>
+        <ul>
+            @foreach (string ingredient in recipe.Ingredients)
+            {
+                <li>@ingredient</li>
+            }
+        </ul>
+        <NavLink class="btn btn-primary" href="@($"/recipe/{recipe.Id}")" Match="NavLinkMatch.Prefix">View Recipe</NavLink>
+    </div>
+}
+
+<br />
+
+<NavLink class="btn btn-success" href="/addrecipe">Add New Recipe</NavLink>
+
+@code {
+    private List<Recipe> recipes = new List<Recipe>();
+
+    protected override void OnInitialized()
+    {
+        recipes.Add(item: new Recipe
+        {
+            Id = 1,
+            Title = "Spaghetti Bolognese",
+            Ingredients = new List<string> { "Spaghetti", "Ground Beef",
+"Tomato Sauce" }
+        });
+        recipes.Add(item: new Recipe
+        {
+            Id = 2,
+            Title = "Chicken Curry",
+            Ingredients = new List<string> { "Chicken", "Curry Powder",
+"Coconut Milk" }
+        });
+        recipes.Add(item: new Recipe
+        {
+            Id = 3,
+            Title = "Vegetable Stir Fry",
+            Ingredients = new List<string> { "Mixed Vegetables", "Soy Sauce",
+"Garlic" }
+        });
+    }
+}

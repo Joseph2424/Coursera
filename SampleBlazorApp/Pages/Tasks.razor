@@ -1,0 +1,29 @@
+﻿@page "/tasks"
+@using SampleBlazorApp.Components.Tasks
+
+<h3>Tasks</h3>
+
+@foreach (var task in tasks)
+{
+    <TaskDisplay Title="@task" OnTaskCompleted="HandleTaskCompleted" />
+}
+
+@code {
+    private List<string> tasks = new List<string>
+    {
+        "Task 1",
+        "Task 2",
+        "Task 3"
+    };
+
+    private void HandleTaskCompleted(string taskTitle)
+    {
+        tasks.Remove(taskTitle);
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        Console.WriteLine("Tasks page initialized with tasks: " + string.Join(", ", tasks));
+    }
+}

@@ -1,0 +1,57 @@
+@page "/feedback-list"
+@using Models;
+@inject SampleBlazorApp.Services.FeedbackService FeedbackService;
+
+<h3>Feedback List</h3>
+
+<button @onclick="LoadFeedback">Load feedback from localStorage</button>
+<button @onclick="ClearFeedback" style="margin-left:10px">Clear localStorage key</button>
+
+@if (loading)
+{
+    <p>Loading...</p>
+}
+else if (feedback == null || feedback.Name == null)
+{
+    <p>No feedback found.</p>
+}
+else
+{
+    <ul>
+        <li>
+            <strong>@feedback.Name</strong> (@feedback.Email)
+            <div>@feedback.Comment</div>
+        </li>
+    </ul>
+}
+
+@code {
+    private bool loading = false;
+    private Feedback feedback = new Feedback();
+
+    private async Task LoadFeedback()
+    {
+        loading = true;
+        try
+        {
+            // assumes JSON stored under key "feedback" as an array of objects
+            Feedback? feedbackEntry = await FeedbackService.GetJsonAsync<Feedback>("feedback");
+            if (feedbackEntry != null)
+            {
+                feedback = feedbackEntry;
+            }
+        }
+        catch
+        {
+            // ignore errors
+        }
+        loading = false;
+        StateHasChanged();
+    }
+
+    private async Task ClearFeedback()
+    {
+        await FeedbackService.RemoveAsync("feedback");
+        feedback = new Feedback();
+    }
+}

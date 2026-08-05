@@ -1,0 +1,58 @@
+@page "/events/{Id:int}/register"
+@inject EventEase.Services.EventService EventService
+
+@if (EventEntry == null)
+{
+    <p>Event not found.</p>
+}
+else
+{
+    <div class="card">
+        <h2>Register for @EventEntry.Name</h2>
+
+        <EditForm Model="@registration" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <label class="form-label">Name</label>
+            <InputText class="form-control" @bind-Value="registration.Name" />
+
+            <label class="form-label">Email</label>
+            <InputText class="form-control" @bind-Value="registration.Email" />
+
+            <button type="submit" class="btn btn-primary">Submit Registration</button>
+        </EditForm>
+
+        @if (submitted)
+        {
+            <p class="mt-3" style="color: #38a169; font-weight: bold;">
+                Registration submitted!
+            </p>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private EventEase.Models.Event? EventEntry;
+    private RegistrationModel registration = new();
+    private bool submitted = false;
+
+    protected override void OnParametersSet()
+    {
+        EventEntry = EventService.GetEventById(Id);
+    }
+
+    private void HandleValidSubmit()
+    {
+        // In a real app, save to backend here
+        submitted = true;
+    }
+
+    public class RegistrationModel
+    {
+        public string Name { get; set; } = "";
+        public string Email { get; set; } = "";
+    }
+}

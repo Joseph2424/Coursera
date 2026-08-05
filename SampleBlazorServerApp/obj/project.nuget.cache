@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "R/Io3gWTbuM=",
+  "success": true,
+  "projectFilePath": "/Users/rosadojoseph/Documents/Learning/Coursera/SampleBlazorServerApp/SampleBlazorServerApp.csproj",
+  "expectedPackageFiles": [
+    "/Users/rosadojoseph/.nuget/packages/microsoft.aspnetcore.app.internal.assets/10.0.0/microsoft.aspnetcore.app.internal.assets.10.0.0.nupkg.sha512",
+    "/Users/rosadojoseph/.nuget/packages/microsoft.aspnetcore.http.connections.client/10.0.10/microsoft.aspnetcore.http.connections.client.10.0.10.nupkg.sha512",
+    "/Users/rosadojoseph/.nuget/packages/microsoft.aspnetcore.signalr.client/10.0.10/microsoft.aspnetcore.signalr.client.10.0.10.nupkg.sha512",
+    "/Users/rosadojoseph/.nuget/packages/microsoft.aspnetcore.signalr.client.core/10.0.10/microsoft.aspnetcore.signalr.client.core.10.0.10.nupkg.sha512"
+  ],
+  "logs": []
+}

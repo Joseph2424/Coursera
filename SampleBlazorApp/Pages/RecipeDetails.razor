@@ -1,0 +1,38 @@
+@page "/recipe/{id:int}" 
+
+<PageTitle>Recipe Details</PageTitle>
+
+@if (recipe is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <h1>@recipe.Title</h1>
+    <p>@recipe.Description</p>
+    <ul>
+        @foreach (string ingredient in recipe.Ingredients)
+        {
+            <li>@ingredient</li>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    private Recipe? recipe;
+
+    protected override void OnInitialized()
+    {
+        // For demonstration purposes, we'll create a sample recipe.
+        // In a real application, you would fetch the recipe from a database or service using the id parameter.
+        recipe = new Recipe
+        {
+            Title = "Sample Recipe",
+            Description = "This is a sample recipe description.",
+            Ingredients = new List<string> { "Ingredient 1", "Ingredient 2", "Ingredient 3" }
+        };
+    }
+}
