@@ -1,5 +1,7 @@
 @page "/events/{Id:int}/register"
-@inject EventEase.Services.EventService EventService
+@using System.ComponentModel.DataAnnotations;
+@inject EventEase.Services.EventService EventService;
+@inject EventEase.Services.UserSessionService SessionService
 
 @if (EventEntry == null)
 {
@@ -7,20 +9,41 @@
 }
 else
 {
-    <div class="card">
+    <div class="card p-4">
         <h2>Register for @EventEntry.Name</h2>
 
         <EditForm Model="@registration" OnValidSubmit="HandleValidSubmit">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
-            <label class="form-label">Name</label>
-            <InputText class="form-control" @bind-Value="registration.Name" />
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <InputText class="form-control" @bind-Value="registration.Name" />
+                <ValidationMessage For="@(() => registration.Name)" />
+            </div>
 
-            <label class="form-label">Email</label>
-            <InputText class="form-control" @bind-Value="registration.Email" />
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <InputText class="form-control" @bind-Value="registration.Email" />
+                <ValidationMessage For="@(() => registration.Email)" />
+            </div>
 
-            <button type="submit" class="btn btn-primary">Submit Registration</button>
+            @if (SessionService.RegisteredEventIds.Contains(EventEntry.Id))
+            {
+                <button class="btn btn-secondary" disabled>
+                    Already Registered
+                </button>
+
+                <button class="btn btn-danger ms-2" @onclick="RemoveRegistration">
+                    Remove Registration
+                </button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-primary">
+                    Submit Registration
+                </button>
+            }
         </EditForm>
 
         @if (submitted)
@@ -44,15 +67,33 @@ else
         EventEntry = EventService.GetEventById(Id);
     }
 
-    private void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
-        // In a real app, save to backend here
         submitted = true;
+        if (EventEntry != null)
+        {
+            await SessionService.AddEventToSession(EventEntry.Id);
+            await SessionService.MarkEventAttended(EventEntry.Id);
+        }
+    }
+
+    private async Task RemoveRegistration()
+    {
+        if (EventEntry != null)
+        {
+            await SessionService.RemoveEventRegistration(EventEntry.Id);
+            submitted = false; // Hide the “submitted” message
+        }
     }
 
     public class RegistrationModel
     {
+        [Required(ErrorMessage = "Name is required.")]
+        [StringLength(100, ErrorMessage = "Name must be under 100 characters.")]
         public string Name { get; set; } = "";
+
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
         public string Email { get; set; } = "";
     }
 }

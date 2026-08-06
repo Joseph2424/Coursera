@@ -1,5 +1,6 @@
 @page "/events/{Id:int}"
 @inject EventEase.Services.EventService EventService
+@inject EventEase.Services.UserSessionService SessionService
 
 <h3>Event Details</h3>
 
@@ -29,5 +30,10 @@ else
     protected override void OnParametersSet()
     {
         EventEntry = EventService.GetEventById(Id);
+
+        if (EventEntry != null)
+        {
+            SessionService.MarkEventVisited(EventEntry.Id);
+        }
     }
 }

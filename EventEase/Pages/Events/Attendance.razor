@@ -1,0 +1,39 @@
+@inject EventEase.Services.UserSessionService SessionService
+@inject EventEase.Services.EventService EventService
+
+<h3>Your Event Participation</h3>
+
+@if (!SessionService.RegisteredEventIds.Any() &&
+    !SessionService.VisitedEventIds.Any() &&
+    !SessionService.AttendedEventIds.Any())
+{
+    <p>You have no tracked event activity yet.</p>
+}
+else
+{
+    <ul class="list-group">
+
+        @foreach (var eventId in SessionService.VisitedEventIds)
+        {
+            var evt = EventService.GetEventById(eventId);
+            if (evt != null)
+            {
+                <li class="list-group-item">
+                    <strong>@evt.Name</strong>
+
+                    <div>
+                        Viewed: ✔️
+                        @if (SessionService.RegisteredEventIds.Contains(eventId))
+                        {
+                            <span class="ms-2">Registered: ✔️</span>
+                        }
+                        @if (SessionService.AttendedEventIds.Contains(eventId))
+                        {
+                            <span class="ms-2">Attended: ✔️</span>
+                        }
+                    </div>
+                </li>
+            }
+        }
+    </ul>
+}

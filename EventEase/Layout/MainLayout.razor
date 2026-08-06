@@ -1,4 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿@using EventEase.Services
+@inject UserSessionService SessionService
+
+@inject IJSRuntime JS
+
+@inherits LayoutComponentBase
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -14,3 +19,23 @@
         </article>
     </main>
 </div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Create or load session ID
+        var sessionId = await JS.InvokeAsync<string>("localStorage.getItem", "SessionId");
+
+        if (string.IsNullOrWhiteSpace(sessionId))
+        {
+            sessionId = Guid.NewGuid().ToString();
+            await JS.InvokeVoidAsync("localStorage.setItem", "SessionId", sessionId);
+        }
+
+        SessionService.SessionId = sessionId;
+
+        // Load previous session data if exists
+        await SessionService.LoadFromLocalStorageAsync();
+    }
+
+}

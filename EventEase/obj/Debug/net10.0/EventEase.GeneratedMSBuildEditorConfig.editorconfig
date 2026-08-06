@@ -36,6 +36,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQ291bnRlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Users/rosadojoseph/Documents/Learning/Coursera/EventEase/Pages/Events/Attendance.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRXZlbnRzL0F0dGVuZGFuY2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/rosadojoseph/Documents/Learning/Coursera/EventEase/Pages/Events/Details.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRXZlbnRzL0RldGFpbHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
