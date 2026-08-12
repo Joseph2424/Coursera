@@ -1,9 +1,17 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace UserManagementAPI.Models
 {
     public class User
     {
-        public int Id { get; set; }          // Unique identifier
-        public required string Name { get; set; }     // User's name
-        public required string Email { get; set; }    // User's email
+        public int Id { get; set; }
+
+        [Required]
+        [MinLength(2)]
+        public required string Name { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public required string Email { get; set; }
     }
 }

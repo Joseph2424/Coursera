@@ -6,14 +6,9 @@ namespace UserManagementAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    public class UsersController(UserRepository repo) : ControllerBase
     {
-        private readonly UserRepository _repo;
-
-        public UsersController(UserRepository repo)
-        {
-            _repo = repo;
-        }
+        private readonly UserRepository _repo = repo;
 
         [HttpGet]
         public IActionResult GetAll() =>
@@ -23,12 +18,17 @@ namespace UserManagementAPI.Controllers
         public IActionResult Get(int id)
         {
             var user = _repo.Get(id);
-            return user == null ? NotFound() : Ok(user);
+            return user == null
+                ? NotFound(new { message = $"User {id} not found" })
+                : Ok(user);
         }
 
         [HttpPost]
         public IActionResult Create(User user)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var created = _repo.Create(user);
             return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
         }
@@ -36,20 +36,30 @@ namespace UserManagementAPI.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, User user)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var success = _repo.Update(id, user);
-            return success ? NoContent() : NotFound();
+            return success
+                ? NoContent()
+                : NotFound(new { message = $"User {id} not found" });
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             var success = _repo.Delete(id);
-            return success ? NoContent() : NotFound();
+            return success
+                ? NoContent()
+                : NotFound(new { message = $"User {id} not found" });
         }
 
         [HttpGet("search")]
         public IActionResult Search([FromQuery] string term)
         {
+            if (string.IsNullOrWhiteSpace(term))
+                return BadRequest(new { message = "Search term cannot be empty" });
+
             var results = _repo.Search(term);
             return Ok(results);
         }

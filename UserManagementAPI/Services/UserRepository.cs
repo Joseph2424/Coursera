@@ -32,6 +32,9 @@ namespace UserManagementAPI.Services
 
         public IEnumerable<User> Search(string term)
         {
+            if (string.IsNullOrWhiteSpace(term))
+                return Enumerable.Empty<User>();
+
             term = term.ToLower();
             return _users.Values.Where(u =>
                 u.Name.ToLower().Contains(term) ||
