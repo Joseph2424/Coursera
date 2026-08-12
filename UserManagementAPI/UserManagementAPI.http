@@ -1,5 +1,14 @@
-### Create
-POST http://localhost:5119/api/users
+### ---------------------------------------------------------
+### Global Variables
+### ---------------------------------------------------------
+@host = http://localhost:5119
+@token = my-secret-token
+
+### ---------------------------------------------------------
+### 1. Create User (Valid Token)
+### ---------------------------------------------------------
+POST {{host}}/api/users
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -7,14 +16,53 @@ Content-Type: application/json
   "email": "joseph@example.com"
 }
 
-### Get All
-GET http://localhost:5119/api/users
+### ---------------------------------------------------------
+### 2. Create User (Invalid Token)
+### ---------------------------------------------------------
+POST {{host}}/api/users
+Authorization: Bearer wrong-token
+Content-Type: application/json
 
-### Get by ID
-GET http://localhost:5119/api/users/1
+{
+  "name": "Invalid User",
+  "email": "invalid@example.com"
+}
 
-### Update
-PUT http://localhost:5119/api/users/1
+### ---------------------------------------------------------
+### 3. Create User (Validation Error)
+### ---------------------------------------------------------
+POST {{host}}/api/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "J",              // Too short
+  "email": "not-an-email"   // Invalid email
+}
+
+### ---------------------------------------------------------
+### 4. Get All Users
+### ---------------------------------------------------------
+GET {{host}}/api/users
+Authorization: Bearer {{token}}
+
+### ---------------------------------------------------------
+### 5. Get User by ID
+### ---------------------------------------------------------
+GET {{host}}/api/users/1
+Authorization: Bearer {{token}}
+
+### ---------------------------------------------------------
+### 6. Get User by ID (Not Found)
+### ---------------------------------------------------------
+GET {{host}}/api/users/999
+Authorization: Bearer {{token}}
+
+### ---------------------------------------------------------
+### 7. Update User
+### ---------------------------------------------------------
+PUT {{host}}/api/users/1
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -22,8 +70,55 @@ Content-Type: application/json
   "email": "new@example.com"
 }
 
-### Delete
-DELETE http://localhost:5119/api/users/1
+### ---------------------------------------------------------
+### 8. Update User (Validation Error)
+### ---------------------------------------------------------
+PUT {{host}}/api/users/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
 
-### Search
-GET http://localhost:5119/api/users/search?term=jose
+{
+  "name": "",
+  "email": "bad-email"
+}
+
+### ---------------------------------------------------------
+### 9. Delete User
+### ---------------------------------------------------------
+DELETE {{host}}/api/users/1
+Authorization: Bearer {{token}}
+
+### ---------------------------------------------------------
+### 10. Delete User (Not Found)
+### ---------------------------------------------------------
+DELETE {{host}}/api/users/999
+Authorization: Bearer {{token}}
+
+### ---------------------------------------------------------
+### 11. Search Users
+### ---------------------------------------------------------
+GET {{host}}/api/users/search?term=jose
+Authorization: Bearer {{token}}
+
+### ---------------------------------------------------------
+### 12. Search Users (Empty Term)
+### ---------------------------------------------------------
+GET {{host}}/api/users/search?term=
+Authorization: Bearer {{token}}
+
+### ---------------------------------------------------------
+### 13. Missing Authorization Header
+### ---------------------------------------------------------
+GET {{host}}/api/users
+
+### ---------------------------------------------------------
+### 14. Malformed Authorization Header
+### ---------------------------------------------------------
+GET {{host}}/api/users
+Authorization: Token abc123
+
+### ---------------------------------------------------------
+### 15. Valid Token Smoke Test
+### ---------------------------------------------------------
+GET {{host}}/api/users
+Authorization: Bearer {{token}}
