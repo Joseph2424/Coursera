@@ -1,0 +1,29 @@
+### Create
+POST http://localhost:5000/api/users
+Content-Type: application/json
+
+{
+  "name": "Joseph",
+  "email": "joseph@example.com"
+}
+
+### Get All
+GET http://localhost:5000/api/users
+
+### Get by ID
+GET http://localhost:5000/api/users/1
+
+### Update
+PUT http://localhost:5000/api/users/1
+Content-Type: application/json
+
+{
+  "name": "Joseph Updated",
+  "email": "new@example.com"
+}
+
+### Delete
+DELETE http://localhost:5000/api/users/1
+
+### Search
+GET http://localhost:5000/api/users/search?term=jose

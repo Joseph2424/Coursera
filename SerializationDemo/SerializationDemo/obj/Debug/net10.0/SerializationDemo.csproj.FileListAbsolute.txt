@@ -1,0 +1,15 @@
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/bin/Debug/net10.0/SerializationDemo
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/bin/Debug/net10.0/SerializationDemo.deps.json
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/bin/Debug/net10.0/SerializationDemo.runtimeconfig.json
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/bin/Debug/net10.0/SerializationDemo.dll
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/bin/Debug/net10.0/SerializationDemo.pdb
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/obj/Debug/net10.0/SerializationDemo.GeneratedMSBuildEditorConfig.editorconfig
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/obj/Debug/net10.0/SerializationDemo.AssemblyInfoInputs.cache
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/obj/Debug/net10.0/SerializationDemo.AssemblyInfo.cs
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/obj/Debug/net10.0/SerializationDemo.csproj.CoreCompileInputs.cache
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/obj/Debug/net10.0/SerializationDemo.sourcelink.json
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/obj/Debug/net10.0/SerializationDemo.dll
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/obj/Debug/net10.0/refint/SerializationDemo.dll
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/obj/Debug/net10.0/SerializationDemo.pdb
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/obj/Debug/net10.0/SerializationDemo.genruntimeconfig.cache
+/Users/rosadojoseph/Documents/Learning/Coursera/SerializationDemo/SerializationDemo/obj/Debug/net10.0/ref/SerializationDemo.dll
