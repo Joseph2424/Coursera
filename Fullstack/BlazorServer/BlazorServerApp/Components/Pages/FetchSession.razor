@@ -1,0 +1,73 @@
+@page "/session"
+
+@using BlazorServerApp.Services;
+
+@inject ISessionService SessionStore
+
+<h3>Session Storage Demo</h3>
+
+<div class="mb-3">
+    <label>Key:</label>
+    <input class="form-control" @bind="Key" />
+</div>
+
+<div class="mb-3">
+    <label>Value:</label>
+    <input class="form-control" @bind="Value" />
+</div>
+
+<button class="btn btn-primary me-2" @onclick="WriteAsync">Write</button>
+<button class="btn btn-success me-2" @onclick="ReadAsync">Read</button>
+<button class="btn btn-danger" @onclick="DeleteAsync">Delete</button>
+
+@if (!string.IsNullOrWhiteSpace(ReadResult))
+{
+    <div class="alert alert-info mt-3">
+        <strong>Result:</strong> @ReadResult
+    </div>
+}
+
+@code {
+    public string Key { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
+    public string ReadResult { get; set; } = string.Empty;
+
+    private async Task WriteAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Key))
+        {
+            ReadResult = "Key is required.";
+            return;
+        }
+
+        await SessionStore.SetAsync(Key, Value);
+        ReadResult = $"Stored '{Value}' in session storage.";
+    }
+
+    private async Task ReadAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Key))
+        {
+            ReadResult = "Key is required.";
+            return;
+        }
+
+        var stored = await SessionStore.GetAsync<string>(Key);
+
+        ReadResult = stored is null
+            ? "No value found."
+            : $"Value: {stored}";
+    }
+
+    private async Task DeleteAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Key))
+        {
+            ReadResult = "Key is required.";
+            return;
+        }
+
+        await SessionStore.RemoveAsync(Key);
+        ReadResult = "Deleted from session storage.";
+    }
+}

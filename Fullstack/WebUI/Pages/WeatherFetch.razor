@@ -1,0 +1,110 @@
+@page "/weatherFetch"
+@using System.Net.Http.Json
+@using 	WebUI.Models;
+@using WebUI.Services;
+
+@inject IWeatherApiService WeatherApi
+
+@inject HttpClient Http
+@inject IConfiguration Configuration
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather forecast</h1>
+
+<EditForm Model="this" OnValidSubmit="LoadWeather">
+	<div class="input-group mb-3" style="max-width: 32rem">
+		<InputText class="form-control" @bind-Value="Location" placeholder="City or postcode" />
+		<button class="btn btn-primary" type="submit" disabled="@IsLoading">
+			@(IsLoading ? "Loading..." : "Search")
+		</button>
+	</div>
+</EditForm>
+
+@if (IsLoading)
+{
+    <div class="d-flex align-items-center gap-2 my-3">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <span>Fetching weather data…</span>
+    </div>
+}
+else if (ErrorMessage is not null)
+{
+	<div class="alert alert-danger">@ErrorMessage</div>
+}
+else if (Weather is not null)
+{
+	<div class="card p-3" style="max-width: 42rem">
+		<h2>@Weather.Location.Name, @Weather.Location.Country</h2>
+		<p class="text-muted">Local time: @Weather.Location.Localtime</p>
+		<div class="d-flex align-items-center gap-3">
+			<img src="@($"https:{Weather.Current.Condition.Icon}")" alt="@Weather.Current.Condition.Text" />
+			<div>
+				<div class="display-5">@Weather.Current.TempC.ToString("0")°C</div>
+				<div>@Weather.Current.Condition.Text</div>
+				<small>Feels like @Weather.Current.FeelsLikeC.ToString("0")°C · Wind @Weather.Current.WindKph.ToString("0") km/h</small>
+			</div>
+		</div>
+
+		<h3 class="mt-4">Three-day forecast</h3>
+		<div class="row">
+			@foreach (var day in Weather.Forecast.Forecastday)
+			{
+				<div class="col-sm-4 mb-2">
+					<div class="border rounded p-2">
+						<strong>@day.Date.ToString("ddd, MMM d")</strong>
+						<div>@day.Day.Condition.Text</div>
+						<div>@day.Day.MaxTempC.ToString("0")° / @day.Day.MinTempC.ToString("0")°C</div>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+}
+
+@code {
+    private string Location { get; set; } = "London";
+    private WeatherResponse? Weather { get; set; }
+    private string? ErrorMessage { get; set; }
+    private bool IsLoading { get; set; }
+
+    protected override void OnInitialized()
+    {
+        WeatherApi.WeatherChanged += OnWeatherChanged;
+    }
+
+    private async Task OnWeatherChanged(WeatherResponse? data)
+    {
+        Weather = data;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadWeather()
+    {
+        ErrorMessage = null;
+        Weather = null;
+        IsLoading = true;
+
+        try
+        {
+            await WeatherApi.GetForecastAsync(Location, days: 3);
+            if (WeatherApi.CurrentWeather is null)
+                ErrorMessage = "No weather data was returned.";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Unable to load weather: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    public void Dispose()
+    {
+        WeatherApi.WeatherChanged -= OnWeatherChanged;
+    }
+}

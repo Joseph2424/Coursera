@@ -1,0 +1,78 @@
+@page "/cache"
+@using BlazorServerApp.Services;
+
+@inject ICacheService Cache
+
+<h3>Cache Demo</h3>
+
+<div class="mb-3">
+    <label>Cache Key:</label>
+    <input class="form-control" @bind="Key" />
+</div>
+
+<div class="mb-3">
+    <label>Value:</label>
+    <input class="form-control" @bind="Value" />
+</div>
+
+<div class="mb-3">
+    <label>Expiration (seconds):</label>
+    <input class="form-control" type="number" @bind="ExpirationSeconds" />
+</div>
+
+<button class="btn btn-primary me-2" @onclick="WriteToCache">Write</button>
+<button class="btn btn-success me-2" @onclick="ReadFromCache">Read</button>
+<button class="btn btn-danger" @onclick="DeleteFromCache">Delete</button>
+
+@if (!string.IsNullOrWhiteSpace(ReadResult))
+{
+    <div class="alert alert-info mt-3">
+        <strong>Cache Result:</strong> @ReadResult
+    </div>
+}
+
+@code {
+    public string Key { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
+    public int ExpirationSeconds { get; set; } = 60;
+
+    public string ReadResult { get; set; } = string.Empty;
+
+    private void WriteToCache()
+    {
+        if (string.IsNullOrWhiteSpace(Key))
+        {
+            ReadResult = "Key is required.";
+            return;
+        }
+
+        Cache.Set(Key, Value, TimeSpan.FromSeconds(ExpirationSeconds));
+        ReadResult = $"Stored '{Value}' with expiration of {ExpirationSeconds} seconds.";
+    }
+
+    private void ReadFromCache()
+    {
+        if (string.IsNullOrWhiteSpace(Key))
+        {
+            ReadResult = "Key is required.";
+            return;
+        }
+
+        var cached = Cache.Get<string>(Key);
+        ReadResult = cached is null
+            ? "No value found (expired or missing)."
+            : $"Value: {cached}";
+    }
+
+    private void DeleteFromCache()
+    {
+        if (string.IsNullOrWhiteSpace(Key))
+        {
+            ReadResult = "Key is required.";
+            return;
+        }
+
+        Cache.Remove(Key);
+        ReadResult = "Deleted from cache.";
+    }
+}

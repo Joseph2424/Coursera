@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "XET19GTMHNY=",
+  "success": true,
+  "projectFilePath": "/Users/josephrosado/Documents/Github/Coursera/Fullstack/src/BlazorServer/BlazorServerApp/BlazorServerApp.csproj",
+  "expectedPackageFiles": [
+    "/Users/josephrosado/.nuget/packages/blazor.storage/5.0.0/blazor.storage.5.0.0.nupkg.sha512",
+    "/Users/josephrosado/.nuget/packages/microsoft.aspnetcore.app.internal.assets/10.0.11/microsoft.aspnetcore.app.internal.assets.10.0.11.nupkg.sha512"
+  ],
+  "logs": []
+}

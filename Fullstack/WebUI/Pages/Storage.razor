@@ -1,0 +1,72 @@
+@page "/localstorage"
+
+@using Blazored.LocalStorage
+
+@inject ILocalStorageService LocalStorage
+
+<h3>Local Storage Demo (Blazor.Storage)</h3>
+
+<div class="mb-3">
+    <input class="form-control"
+           placeholder="Enter item"
+           @bind="newItem" />
+
+    <button class="btn btn-primary mt-2" @onclick="AddItem">Add</button>
+    <button class="btn btn-danger mt-2 ms-2" @onclick="ClearItems">Clear All</button>
+</div>
+
+<ul class="list-group">
+    @foreach (var item in items)
+    {
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            @item
+            <button class="btn btn-sm btn-outline-danger"
+                    @onclick="() => RemoveItem(item)">
+                Remove
+            </button>
+        </li>
+    }
+</ul>
+
+@code {
+    private const string StorageKey = "my-items";
+    private List<string> items = new();
+    private string? newItem;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadItems();
+    }
+
+    private async Task LoadItems()
+    {
+        items = await LocalStorage.GetItemAsync<List<string>>(StorageKey) ?? new();
+    }
+
+    private async Task SaveItems()
+    {
+        await LocalStorage.SetItemAsync(StorageKey, items);
+    }
+
+    private async Task AddItem()
+    {
+        if (!string.IsNullOrWhiteSpace(newItem))
+        {
+            items.Add(newItem);
+            newItem = string.Empty;
+            await SaveItems();
+        }
+    }
+
+    private async Task RemoveItem(string item)
+    {
+        items.Remove(item);
+        await SaveItems();
+    }
+
+    private async Task ClearItems()
+    {
+        items.Clear();
+        await LocalStorage.RemoveItemAsync(StorageKey);
+    }
+}

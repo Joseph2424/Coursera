@@ -1,0 +1,45 @@
+@page "/chat"
+@using BlazorChatClient.Services;
+
+@inject ChatService ChatService
+
+<h3>Blazor Chat</h3>
+
+<div class="chat-window">
+    @foreach (var msg in messages)
+    {
+        <div><b>@msg.User:</b> @msg.Text</div>
+    }
+</div>
+
+<input @bind="userName" placeholder="Your name" class="form-control" />
+<textarea @bind="messageText" placeholder="Type a message..." class="form-control"></textarea>
+
+<button class="btn btn-primary" @onclick="SendMessage">Send</button>
+
+@code {
+    private string userName = "";
+    private string messageText = "";
+
+    private List<(string User, string Text)> messages = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ChatService.MessageReceived += (user, message) =>
+        {
+            messages.Add((user, message));
+            InvokeAsync(StateHasChanged);
+        };
+
+        await ChatService.StartAsync();
+    }
+
+    private async Task SendMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(messageText))
+        {
+            await ChatService.SendMessage(userName, messageText);
+            messageText = "";
+        }
+    }
+}

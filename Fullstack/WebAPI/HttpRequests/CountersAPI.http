@@ -1,0 +1,23 @@
+### Get all counters
+GET http://localhost:5102/api/counters
+Accept: application/json
+
+
+### Add a new named counter
+POST http://localhost:5102/api/counters/myCounter
+Accept: application/json
+
+
+### Get a specific counter
+GET http://localhost:5102/api/counters/myCounter
+Accept: application/json
+
+
+### Increment a counter
+PUT http://localhost:5102/api/counters/myCounter/increment
+Accept: application/json
+
+
+### Delete a counter
+DELETE http://localhost:5102/api/counters/myCounter
+Accept: application/json

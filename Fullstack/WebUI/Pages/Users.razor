@@ -1,0 +1,95 @@
+@page "/users"
+@using System.Net.Http.Json
+@implements IDisposable
+@inject HttpClient Http
+
+<PageTitle>Users</PageTitle>
+
+<h1>Users</h1>
+
+@if (_loading)
+{
+	<p>Loading users...</p>
+}
+else if (_error is not null)
+{
+	<p class="text-danger">@_error</p>
+	<button class="btn btn-primary" @onclick="LoadUsersAsync">Try again</button>
+}
+else if (_users.Count == 0)
+{
+	<p>No users found.</p>
+}
+else
+{
+	<ul>
+		@foreach (var user in _users)
+		{
+			<li>
+				<strong>@user.Name</strong> (@user.Username)<br />
+				<span>@user.Email</span>
+			</li>
+		}
+	</ul>
+}
+
+@code {
+	private readonly List<User> _users = [];
+	private CancellationTokenSource? _loadCancellation;
+	private bool _loading;
+	private string? _error;
+
+	protected override Task OnInitializedAsync() => LoadUsersAsync();
+
+	private async Task LoadUsersAsync()
+	{
+		_loadCancellation?.Cancel();
+		_loadCancellation?.Dispose();
+
+		using var cancellation = new CancellationTokenSource();
+		_loadCancellation = cancellation;
+		_loading = true;
+		_error = null;
+
+		try
+		{
+			var users = await Http.GetFromJsonAsync<List<User>>(
+				"https://jsonplaceholder.typicode.com/users",
+				cancellation.Token);
+
+			if (!cancellation.IsCancellationRequested)
+			{
+				_users.Clear();
+				_users.AddRange(users ?? []);
+			}
+		}
+		catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+		{
+		}
+		catch (Exception ex)
+		{
+			_error = $"Unable to load users: {ex.Message}";
+		}
+		finally
+		{
+			if (ReferenceEquals(_loadCancellation, cancellation))
+			{
+				_loadCancellation = null;
+				_loading = false;
+			}
+		}
+	}
+
+	public void Dispose()
+	{
+		_loadCancellation?.Cancel();
+		_loadCancellation?.Dispose();
+	}
+
+	private sealed class User
+	{
+		public string Name { get; set; } = string.Empty;
+		public string Username { get; set; } = string.Empty;
+		public string Email { get; set; } = string.Empty;
+	}
+}
