@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/InventoryManagement.Presentation/">
+    <Project Path="InventoryManagement.Presentation/InventoryManagement.Api/InventoryManagement.Api.csproj"/>
+    <Project Path="InventoryManagement.Presentation/InventoryManagement.Web/InventoryManagement.Web.csproj"/>
+  </Folder>
+  <Project Path="InventoryManagement.Application/InventoryManagement.Application.csproj"/>
+  <Project Path="InventoryManagement.Domain/InventoryManagement.Domain.csproj"/>
+  <Project Path="InventoryManagement.Infrastructure/InventoryManagement.Infrastructure.csproj"/>
+</Solution>

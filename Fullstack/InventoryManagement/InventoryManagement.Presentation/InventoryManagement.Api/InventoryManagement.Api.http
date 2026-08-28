@@ -1,0 +1,6 @@
+@InventoryManagementApiHostAddress = https://localhost:7295
+
+GET {{InventoryManagementApiHostAddress}}/api/product/single/d238c9cc-cd58-493c-91e2-9e652305e8fb
+Accept: application/json
+
+###

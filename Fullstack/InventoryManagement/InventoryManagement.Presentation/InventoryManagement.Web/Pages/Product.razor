@@ -1,0 +1,60 @@
+@page "/product/{Id}"
+@using InventoryManagement.Application.DTOs.Product;
+@using InventoryManagement.Application.DTOs.Category;
+
+@using Microsoft.AspNetCore.Http
+
+@inject InventoryApiClient ApiClient
+
+<h3>Product</h3>
+
+<p>This is the Product component.</p>
+
+@if (_product is not null)
+{
+    <section class="mx-auto max-w-7xl px-4 pb-8 pt-6 sm:px-6 sm:pt-10 lg:px-8">
+        <div class="grid gap-5 sm:gap-8 lg:grid-cols-[1fr_1fr]">
+            <div class="rounded-3xl border border-neutral-200/70 bg-white/90 p-5 shadow-lg sm:p-8">
+                @{
+                    GetCategory? category = _product.Category;
+                }
+
+                @if (category is not null && category.Id != Guid.Empty)
+                {
+                    <a href="@AppRoutes.Category(category.Id.ToString())"
+                       class="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-500 hover:text-neutral-900">@category.Name</a>
+                }
+                else if (category is not null && !string.IsNullOrWhiteSpace(category.Name))
+                {
+                    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-500">@category.Name</p>
+                }
+
+                <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-neutral-900 sm:text-4xl">@_product.Name</h1>
+                <div class="mt-5">
+                    <div class="text-sm text-neutral-500">Price</div>
+                    <div class="mt-1 text-3xl font-black text-neutral-900 sm:text-4xl">$@_product.Price</div>
+                </div>
+
+                <p class="mt-6 text-base leading-7 text-neutral-700">@_product.Description</p>
+
+            </div>
+        </div>
+    </section>
+}
+
+@code {
+    private GetProduct? _product;
+
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        InventoryApiResult<GetProduct>? result = await ApiClient.GetProductByIdAsync(new Guid(Id));
+
+        _product = result.Value;
+    }
+}
