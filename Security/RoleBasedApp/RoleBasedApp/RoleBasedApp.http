@@ -1,0 +1,6 @@
+@RoleBasedApp_HostAddress = https://localhost:5001
+
+GET {{RoleBasedApp_HostAddress}}/api/users/role-based
+Accept: application/json
+
+###

@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "../../../../Library/Application Support/Code/User/workspaceStorage/1a3bd68b1c951c9dcb43fb6cac2dfc70/ms-dotnettools.csdevkit/RoleBasedApp.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "../../../../Library/Application Support/Code/User/workspaceStorage/1a3bd68b1c951c9dcb43fb6cac2dfc70/ms-dotnettools.csdevkit/RoleBasedApp.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "../../../../Library/Application Support/Code/User/workspaceStorage/1a3bd68b1c951c9dcb43fb6cac2dfc70/ms-dotnettools.csdevkit/RoleBasedApp.sln"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}

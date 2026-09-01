@@ -1,0 +1,14 @@
+{
+  "launchConfigurations": [
+    {
+      "id": "4485a329-3093-4104-90e6-83cbbf7710eb",
+      "name": "RoleClaimsApp",
+      "projects": [
+        {
+          "projectPath": "RoleClaimsApp/RoleClaimsApp.csproj",
+          "debug": true
+        }
+      ]
+    }
+  ]
+}

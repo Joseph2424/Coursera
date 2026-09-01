@@ -1,0 +1,6 @@
+@RoleClaimsApp_HostAddress = http://localhost:5202
+
+GET {{RoleClaimsApp_HostAddress}}/api/users/role-based
+Accept: application/json
+
+###
