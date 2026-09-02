@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RoleBasedApp.Data;
+using RoleBasedApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,8 @@ builder
 builder
     .Services.AddAuthorizationBuilder()
     .AddPolicy("RequireITDepartment", policy => policy.RequireClaim("Department", "IT"));
+
+builder.Services.AddScoped<AuthManager>();
 
 var app = builder.Build();
 
