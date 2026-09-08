@@ -1,0 +1,27 @@
+@page
+@model FileUploadModel
+
+<div class="container mt-4">
+    <h2>File Encryption Demo</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label>Select File</label>
+            <input asp-for="UploadFile" type="file" class="form-control" />
+        </div>
+
+        <button
+            type="submit"
+            asp-page-handler="Encrypt"
+            class="btn btn-primary">
+            Encrypt
+        </button>
+
+        <button
+            type="submit"
+            asp-page-handler="Decrypt"
+            class="btn btn-success">
+            Decrypt
+        </button>
+    </form>
+</div>
