@@ -1,0 +1,49 @@
+@host = http://localhost:5100
+
+@email = newuser-admin@test.com
+@password = Password123!
+
+### Register User
+
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "firstName": "John",
+  "lastName": "Smith"
+}
+
+###
+# @name login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+###
+@token = {{login.response.body.accessToken}}
+
+###
+POST {{host}}/api/auth/assign-role
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "role": "Admin"
+}
+
+###
+GET {{host}}/api/reports
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+GET {{host}}/api/admin
+Authorization: Bearer {{token}}
+Accept: application/json

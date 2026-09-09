@@ -96,3 +96,4 @@
 /Users/josephrosado/Documents/Github/Coursera/Security/EncryptionWebApp/obj/Debug/net10.0/EncryptionWebApp.pdb
 /Users/josephrosado/Documents/Github/Coursera/Security/EncryptionWebApp/obj/Debug/net10.0/EncryptionWebApp.genruntimeconfig.cache
 /Users/josephrosado/Documents/Github/Coursera/Security/EncryptionWebApp/obj/Debug/net10.0/ref/EncryptionWebApp.dll
+/Users/josephrosado/Documents/Github/Coursera/Security/EncryptionWebApp/obj/Debug/net10.0/compressed/qpntptmpxm-{0}-36imt9l670-36imt9l670.gz

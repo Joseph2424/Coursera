@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SecurePortal.Api/SecurePortal.Api.csproj" />
+  <Project Path="SecurePortal.Web/SecurePortal.Web.csproj" />
+</Solution>
