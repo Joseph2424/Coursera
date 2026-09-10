@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using SecurePortal.Web.Handlers;
 using SecurePortal.Web.Services;
@@ -15,12 +16,12 @@ builder.Services.AddRazorPages();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<JwtAuthorizationHandler>();
 
-builder.Services.AddHttpClient<AuthService>(client =>
-{
-    client.BaseAddress =
-        new Uri("http://localhost:5100/");
-})
-.AddHttpMessageHandler<JwtAuthorizationHandler>();
+builder
+    .Services.AddHttpClient<AuthService>(client =>
+    {
+        client.BaseAddress = new Uri("http://localhost:5100/");
+    })
+    .AddHttpMessageHandler<JwtAuthorizationHandler>();
 
 builder
     .Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -31,10 +32,9 @@ builder
         options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
     });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-});
+builder
+    .Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Admin"));
 
 var app = builder.Build();
 
@@ -52,7 +52,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseSession(); 
+app.UseSession();
 
 app.MapStaticAssets();
 app.MapRazorPages().WithStaticAssets();
