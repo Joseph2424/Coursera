@@ -1,0 +1,15 @@
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/bin/Debug/net10.0/AsyncConsoleApp
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/bin/Debug/net10.0/AsyncConsoleApp.deps.json
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/bin/Debug/net10.0/AsyncConsoleApp.runtimeconfig.json
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/bin/Debug/net10.0/AsyncConsoleApp.dll
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/bin/Debug/net10.0/AsyncConsoleApp.pdb
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/obj/Debug/net10.0/AsyncConsoleApp.GeneratedMSBuildEditorConfig.editorconfig
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/obj/Debug/net10.0/AsyncConsoleApp.AssemblyInfoInputs.cache
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/obj/Debug/net10.0/AsyncConsoleApp.AssemblyInfo.cs
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/obj/Debug/net10.0/AsyncConsoleApp.csproj.CoreCompileInputs.cache
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/obj/Debug/net10.0/AsyncConsoleApp.sourcelink.json
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/obj/Debug/net10.0/AsyncConsoleApp.dll
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/obj/Debug/net10.0/refint/AsyncConsoleApp.dll
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/obj/Debug/net10.0/AsyncConsoleApp.pdb
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/obj/Debug/net10.0/AsyncConsoleApp.genruntimeconfig.cache
+/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/obj/Debug/net10.0/ref/AsyncConsoleApp.dll

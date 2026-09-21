@@ -1,0 +1,15 @@
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/bin/Debug/net10.0/SortingApp
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/bin/Debug/net10.0/SortingApp.deps.json
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/bin/Debug/net10.0/SortingApp.runtimeconfig.json
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/bin/Debug/net10.0/SortingApp.dll
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/bin/Debug/net10.0/SortingApp.pdb
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/obj/Debug/net10.0/SortingApp.GeneratedMSBuildEditorConfig.editorconfig
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/obj/Debug/net10.0/SortingApp.AssemblyInfoInputs.cache
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/obj/Debug/net10.0/SortingApp.AssemblyInfo.cs
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/obj/Debug/net10.0/SortingApp.csproj.CoreCompileInputs.cache
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/obj/Debug/net10.0/SortingApp.sourcelink.json
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/obj/Debug/net10.0/SortingApp.dll
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/obj/Debug/net10.0/refint/SortingApp.dll
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/obj/Debug/net10.0/SortingApp.pdb
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/obj/Debug/net10.0/SortingApp.genruntimeconfig.cache
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SortingApp/obj/Debug/net10.0/ref/SortingApp.dll

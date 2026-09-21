@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "dgSpecHash": "AaZf9WyA8S0=",
+  "success": true,
+  "projectFilePath": "/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/AsyncConsoleApp.csproj",
+  "expectedPackageFiles": [
+    "/Users/josephrosado/.nuget/packages/system.threading.channels/10.0.12/system.threading.channels.10.0.12.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1510",
+      "level": "Warning",
+      "message": "PackageReference System.Threading.Channels will not be pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.",
+      "projectPath": "/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/AsyncConsoleApp.csproj",
+      "warningLevel": 1,
+      "filePath": "/Users/josephrosado/Documents/Github/Coursera/Queueing/AsyncConsoleApp/AsyncConsoleApp.csproj",
+      "libraryId": "System.Threading.Channels",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
+}
