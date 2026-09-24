@@ -1,35 +1,66 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 
 namespace SearchApp
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main()
         {
             // Create a sorted array of numbers
-            int[] numbers = new int[100000];
+            // int[] numbers = new int[100000];
 
-            for (int i = 0; i < numbers.Length; i++)
+            // for (int i = 0; i < numbers.Length; i++)
+            // {
+            //     numbers[i] = i + 1;
+            // }
+
+            // int target = 98765;
+
+            //Console.WriteLine($"Searching for: {target}");
+            //Console.WriteLine();
+
+            Console.WriteLine("Retrieving users from API...");
+
+            using HttpClient client = new();
+
+            var response = await client.GetFromJsonAsync<RandomUserResponse>(
+                "https://randomuser.me/api/?results=1000&inc=name&nat=us"
+            );
+
+            if (response?.Results == null)
             {
-                numbers[i] = i + 1;
+                Console.WriteLine("Failed to retrieve users.");
+                return;
             }
 
-            int target = 98765;
+            // Build searchable dataset
+            string[] names = [.. response
+                .Results.Select(u => $"{u.Name.First} {u.Name.Last}")];
 
-            Console.WriteLine($"Searching for: {target}");
-            Console.WriteLine();
+            Console.WriteLine("\nUsers Retrieved:");
+            foreach (var name in names)
+            {
+                Console.WriteLine($" - {name}");
+            }
+
+            // Pick a user to search for
+            string target = names[5];
+
+            Console.WriteLine($"\nSearching for: \"{target}\"");
 
             // Linear Search Test
             Stopwatch linearTimer = Stopwatch.StartNew();
-            int linearComparisons;
-            int linearIndex = LinearSearch(numbers, target, out linearComparisons);
+            int linearIndex = LinearSearch(names, target, out int linearComparisons);
             linearTimer.Stop();
+
+            // Binary Search requires sorted data
+            string[] sortedNames = [.. names.OrderBy(n => n)];
 
             // Binary Search Test
             Stopwatch binaryTimer = Stopwatch.StartNew();
-            int binaryComparisons;
-            int binaryIndex = BinarySearch(numbers, target, out binaryComparisons);
+            int binaryIndex = BinarySearch(sortedNames, target, out int binaryComparisons);
             binaryTimer.Stop();
 
             Console.WriteLine("=== Linear Search ===");
@@ -48,7 +79,7 @@ namespace SearchApp
             Console.ReadKey();
         }
 
-        static int LinearSearch(int[] array, int target, out int comparisons)
+        static int LinearSearch(string[] array, string target, out int comparisons)
         {
             comparisons = 0;
 
@@ -65,7 +96,7 @@ namespace SearchApp
             return -1;
         }
 
-        static int BinarySearch(int[] array, int target, out int comparisons)
+        static int BinarySearch(string[] array, string target, out int comparisons)
         {
             int left = 0;
             int right = array.Length - 1;
@@ -73,25 +104,43 @@ namespace SearchApp
 
             while (left <= right)
             {
-                int middle = left + (right - left) / 2;
                 comparisons++;
 
-                if (array[middle] == target)
-                {
-                    return middle;
-                }
+                int mid = left + (right - left) / 2;
 
-                if (array[middle] < target)
-                {
-                    left = middle + 1;
-                }
+                int result = string.Compare(array[mid], target, StringComparison.OrdinalIgnoreCase);
+
+                if (result == 0)
+                    return mid;
+
+                if (result < 0)
+                    left = mid + 1;
                 else
-                {
-                    right = middle - 1;
-                }
+                    right = mid - 1;
             }
 
             return -1;
         }
+    }
+
+    public class RandomUserResponse
+    {
+        [JsonPropertyName("results")]
+        public List<User> Results { get; set; } = [];
+    }
+
+    public class User
+    {
+        [JsonPropertyName("name")]
+        public Name Name { get; set; } = new();
+    }
+
+    public class Name
+    {
+        [JsonPropertyName("first")]
+        public string First { get; set; } = string.Empty;
+
+        [JsonPropertyName("last")]
+        public string Last { get; set; } = string.Empty;
     }
 }
