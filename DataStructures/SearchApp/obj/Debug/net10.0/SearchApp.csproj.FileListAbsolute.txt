@@ -1,0 +1,15 @@
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/bin/Debug/net10.0/SearchApp
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/bin/Debug/net10.0/SearchApp.deps.json
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/bin/Debug/net10.0/SearchApp.runtimeconfig.json
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/bin/Debug/net10.0/SearchApp.dll
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/bin/Debug/net10.0/SearchApp.pdb
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/obj/Debug/net10.0/SearchApp.GeneratedMSBuildEditorConfig.editorconfig
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/obj/Debug/net10.0/SearchApp.AssemblyInfoInputs.cache
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/obj/Debug/net10.0/SearchApp.AssemblyInfo.cs
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/obj/Debug/net10.0/SearchApp.csproj.CoreCompileInputs.cache
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/obj/Debug/net10.0/SearchApp.sourcelink.json
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/obj/Debug/net10.0/SearchApp.dll
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/obj/Debug/net10.0/refint/SearchApp.dll
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/obj/Debug/net10.0/SearchApp.pdb
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/obj/Debug/net10.0/SearchApp.genruntimeconfig.cache
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/SearchApp/obj/Debug/net10.0/ref/SearchApp.dll
