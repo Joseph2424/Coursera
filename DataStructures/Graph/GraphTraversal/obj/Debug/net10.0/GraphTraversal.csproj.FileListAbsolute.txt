@@ -1,0 +1,15 @@
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/bin/Debug/net10.0/GraphTraversal
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/bin/Debug/net10.0/GraphTraversal.deps.json
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/bin/Debug/net10.0/GraphTraversal.runtimeconfig.json
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/bin/Debug/net10.0/GraphTraversal.dll
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/bin/Debug/net10.0/GraphTraversal.pdb
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/obj/Debug/net10.0/GraphTraversal.GeneratedMSBuildEditorConfig.editorconfig
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/obj/Debug/net10.0/GraphTraversal.AssemblyInfoInputs.cache
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/obj/Debug/net10.0/GraphTraversal.AssemblyInfo.cs
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/obj/Debug/net10.0/GraphTraversal.csproj.CoreCompileInputs.cache
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/obj/Debug/net10.0/GraphTraversal.sourcelink.json
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/obj/Debug/net10.0/GraphTraversal.dll
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/obj/Debug/net10.0/refint/GraphTraversal.dll
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/obj/Debug/net10.0/GraphTraversal.pdb
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/obj/Debug/net10.0/GraphTraversal.genruntimeconfig.cache
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/Graph/GraphTraversal/obj/Debug/net10.0/ref/GraphTraversal.dll

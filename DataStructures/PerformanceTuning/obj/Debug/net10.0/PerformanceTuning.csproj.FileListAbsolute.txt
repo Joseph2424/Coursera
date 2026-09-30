@@ -1,0 +1,15 @@
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/bin/Debug/net10.0/PerformanceTuning
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/bin/Debug/net10.0/PerformanceTuning.deps.json
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/bin/Debug/net10.0/PerformanceTuning.runtimeconfig.json
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/bin/Debug/net10.0/PerformanceTuning.dll
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/bin/Debug/net10.0/PerformanceTuning.pdb
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/obj/Debug/net10.0/PerformanceTuning.GeneratedMSBuildEditorConfig.editorconfig
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/obj/Debug/net10.0/PerformanceTuning.AssemblyInfoInputs.cache
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/obj/Debug/net10.0/PerformanceTuning.AssemblyInfo.cs
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/obj/Debug/net10.0/PerformanceTuning.csproj.CoreCompileInputs.cache
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/obj/Debug/net10.0/PerformanceTuning.sourcelink.json
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/obj/Debug/net10.0/PerformanceTuning.dll
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/obj/Debug/net10.0/refint/PerformanceTuning.dll
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/obj/Debug/net10.0/PerformanceTuning.pdb
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/obj/Debug/net10.0/PerformanceTuning.genruntimeconfig.cache
+/Users/josephrosado/Documents/Github/Coursera/DataStructures/PerformanceTuning/obj/Debug/net10.0/ref/PerformanceTuning.dll
