@@ -23,6 +23,7 @@ await using (var scope = app.Services.CreateAsyncScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<LogiTrackDbContext>();
     await dbContext.Database.EnsureCreatedAsync();
+    await DatabaseSeeder.SeedAsync(dbContext);
 }
 
 app.UseExceptionHandler();
