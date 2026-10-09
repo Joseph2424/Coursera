@@ -1,0 +1,83 @@
+@LogiTrack_HostAddress = http://localhost:5225
+
+### Create a fulfillment center
+POST {{LogiTrack_HostAddress}}/api/fulfillment-centers/
+Content-Type: application/json
+
+{
+	"code": "SEA",
+	"name": "Seattle Fulfillment Center",
+	"location": "Seattle, WA"
+}
+
+### List fulfillment centers
+GET {{LogiTrack_HostAddress}}/api/fulfillment-centers/
+Accept: application/json
+
+### Create inventory at the fulfillment center (use its returned ID)
+POST {{LogiTrack_HostAddress}}/api/inventory/
+Content-Type: application/json
+
+{
+	"sku": "BOX-001",
+	"name": "Shipping Box",
+	"fulfillmentCenterId": 1,
+	"quantityOnHand": 100,
+	"reorderLevel": 20,
+	"unitPrice": 2.50
+}
+
+### List inventory across centers
+GET {{LogiTrack_HostAddress}}/api/inventory/
+Accept: application/json
+
+### View one inventory item
+GET {{LogiTrack_HostAddress}}/api/inventory/1
+Accept: application/json
+
+### Update an inventory item
+PUT {{LogiTrack_HostAddress}}/api/inventory/1
+Content-Type: application/json
+
+{
+	"sku": "BOX-001",
+	"name": "Shipping Box",
+	"fulfillmentCenterId": 1,
+	"quantityOnHand": 120,
+	"reorderLevel": 20,
+	"unitPrice": 2.50
+}
+
+### Create an order (reserves inventory)
+POST {{LogiTrack_HostAddress}}/api/orders/
+Content-Type: application/json
+
+{
+	"customerName": "Jordan Lee",
+	"customerEmail": "jordan@example.com",
+	"fulfillmentCenterId": 1,
+	"items": [
+		{
+			"inventoryItemId": 1,
+			"quantity": 2
+		}
+	]
+}
+
+### List orders
+GET {{LogiTrack_HostAddress}}/api/orders/
+Accept: application/json
+
+### View one order
+GET {{LogiTrack_HostAddress}}/api/orders/1
+Accept: application/json
+
+### Update order customer details or status
+PUT {{LogiTrack_HostAddress}}/api/orders/1
+Content-Type: application/json
+
+{
+	"customerName": "Jordan Lee",
+	"customerEmail": "jordan@example.com",
+	"status": "Processing"
+}
