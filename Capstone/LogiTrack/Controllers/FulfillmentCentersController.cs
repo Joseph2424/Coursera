@@ -1,9 +1,12 @@
 using LogiTrack.Contracts;
+using LogiTrack.Security;
 using LogiTrack.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LogiTrack.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/fulfillment-centers")]
 [Tags("Fulfillment Centers")]
@@ -26,6 +29,7 @@ public sealed class FulfillmentCentersController(IOrderManagementService service
     }
 
     [HttpPost]
+    [Authorize(Roles = AppRoles.Admin)]
     [EndpointSummary("Create a fulfillment center")]
     [ProducesResponseType(typeof(FulfillmentCenterResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<FulfillmentCenterResponse>> Create(

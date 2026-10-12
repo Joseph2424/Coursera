@@ -1,9 +1,12 @@
 using LogiTrack.Contracts;
+using LogiTrack.Security;
 using LogiTrack.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LogiTrack.Controllers;
 
+[Authorize(Roles = AppRoles.Admin)]
 [ApiController]
 [Route("api/orders")]
 [Tags("Orders")]

@@ -1,9 +1,12 @@
 using LogiTrack.Contracts;
+using LogiTrack.Security;
 using LogiTrack.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LogiTrack.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/inventory")]
 [Tags("Inventory")]
@@ -26,6 +29,7 @@ public sealed class InventoryController(IOrderManagementService service) : Contr
     }
 
     [HttpPost]
+    [Authorize(Roles = AppRoles.Admin)]
     [EndpointSummary("Create inventory at a fulfillment center")]
     [ProducesResponseType(typeof(InventoryItemResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<InventoryItemResponse>> Create(
@@ -37,6 +41,7 @@ public sealed class InventoryController(IOrderManagementService service) : Contr
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = AppRoles.Admin)]
     [EndpointSummary("Replace an inventory item")]
     [ProducesResponseType(typeof(InventoryItemResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

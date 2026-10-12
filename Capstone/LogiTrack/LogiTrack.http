@@ -1,7 +1,37 @@
 @LogiTrack_HostAddress = http://localhost:5225
+@userToken = paste-user-access-token-here
+@adminToken = paste-admin-access-token-here
+
+### Register a standard user
+POST {{LogiTrack_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+	"email": "user@example.com",
+	"password": "ChangeThis-User-123"
+}
+
+### Log in as a standard user and copy accessToken from the response
+POST {{LogiTrack_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+	"email": "user@example.com",
+	"password": "ChangeThis-User-123"
+}
+
+### Log in as the configured bootstrap admin and copy accessToken
+POST {{LogiTrack_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+	"email": "admin@example.com",
+	"password": "ReplaceWithBootstrapAdminPassword"
+}
 
 ### Create a fulfillment center
 POST {{LogiTrack_HostAddress}}/api/fulfillment-centers/
+Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
@@ -12,10 +42,12 @@ Content-Type: application/json
 
 ### List fulfillment centers
 GET {{LogiTrack_HostAddress}}/api/fulfillment-centers/
+Authorization: Bearer {{userToken}}
 Accept: application/json
 
 ### Create inventory at the fulfillment center (use its returned ID)
 POST {{LogiTrack_HostAddress}}/api/inventory/
+Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
@@ -29,14 +61,17 @@ Content-Type: application/json
 
 ### List inventory across centers
 GET {{LogiTrack_HostAddress}}/api/inventory/
+Authorization: Bearer {{userToken}}
 Accept: application/json
 
 ### View one inventory item
 GET {{LogiTrack_HostAddress}}/api/inventory/1
+Authorization: Bearer {{userToken}}
 Accept: application/json
 
 ### Update an inventory item
 PUT {{LogiTrack_HostAddress}}/api/inventory/1
+Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
@@ -50,6 +85,7 @@ Content-Type: application/json
 
 ### Create an order (reserves inventory)
 POST {{LogiTrack_HostAddress}}/api/orders/
+Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
@@ -66,14 +102,17 @@ Content-Type: application/json
 
 ### List orders
 GET {{LogiTrack_HostAddress}}/api/orders/
+Authorization: Bearer {{adminToken}}
 Accept: application/json
 
 ### View one order
 GET {{LogiTrack_HostAddress}}/api/orders/1
+Authorization: Bearer {{adminToken}}
 Accept: application/json
 
 ### Update order customer details or status
 PUT {{LogiTrack_HostAddress}}/api/orders/1
+Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
