@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,8 @@ namespace LogiTrack.Middleware;
 
 public sealed class ApiExceptionHandler(ILogger<ApiExceptionHandler> logger) : IExceptionHandler
 {
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
         var (status, title, detail) = exception switch
@@ -19,10 +22,11 @@ public sealed class ApiExceptionHandler(ILogger<ApiExceptionHandler> logger) : I
             return false;
         logger.LogWarning(exception, "Handled API exception with status {StatusCode}", status);
         httpContext.Response.StatusCode = status;
-        await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
+        httpContext.Response.ContentType = "application/problem+json; charset=utf-8";
+        await JsonSerializer.SerializeAsync(httpContext.Response.Body, new ProblemDetails
         {
             Status = status, Title = title, Detail = detail, Instance = httpContext.Request.Path
-        }, cancellationToken);
+        }, JsonOptions, cancellationToken);
         return true;
     }
 }

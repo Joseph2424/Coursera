@@ -4,6 +4,7 @@ using System.Text;
 using LogiTrack.Controllers;
 using LogiTrack.Data;
 using LogiTrack.Middleware;
+using LogiTrack.Security;
 using LogiTrack.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -36,6 +37,11 @@ var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKeyText)
 var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 var tokenIssuer = builder.Configuration["Authentication:Issuer"] ?? "LogiTrack";
 var tokenAudience = builder.Configuration["Authentication:Audience"] ?? "LogiTrack.Api";
+var tokenSettings = new JwtTokenSettings(
+    signingCredentials,
+    tokenIssuer,
+    tokenAudience,
+    builder.Configuration.GetValue("Authentication:AccessTokenMinutes", 60));
 
 builder.Services.AddDbContext<LogiTrackDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("LogiTrack")));
@@ -60,18 +66,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = signingKey,
+            IssuerSigningKey = tokenSettings.SigningCredentials.Key,
             ValidateIssuer = true,
-            ValidIssuer = tokenIssuer,
+            ValidIssuer = tokenSettings.Issuer,
             ValidateAudience = true,
-            ValidAudience = tokenAudience,
+            ValidAudience = tokenSettings.Audience,
             ValidateLifetime = true,
             ClockSkew = TimeSpan.FromSeconds(30),
             RoleClaimType = ClaimTypes.Role
         };
     });
 builder.Services.AddAuthorization();
-builder.Services.AddSingleton(signingCredentials);
+builder.Services.AddSingleton(tokenSettings);
 builder.Services.AddScoped<IdentitySeeder>();
 builder.Services.AddScoped<IOrderManagementService, OrderManagementService>();
 
@@ -104,3 +110,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program;

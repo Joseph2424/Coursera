@@ -16,8 +16,7 @@ namespace LogiTrack.Controllers;
 public sealed class AuthController(
     UserManager<IdentityUser> userManager,
     SignInManager<IdentityUser> signInManager,
-    IConfiguration configuration,
-    SigningCredentials signingCredentials) : ControllerBase
+    JwtTokenSettings tokenSettings) : ControllerBase
 {
     [HttpPost("register")]
     [EndpointSummary("Register a standard user account")]
@@ -64,7 +63,7 @@ public sealed class AuthController(
 
         var roles = await userManager.GetRolesAsync(user);
         var now = DateTimeOffset.UtcNow;
-        var expiresAt = now.AddMinutes(configuration.GetValue("Authentication:AccessTokenMinutes", 60));
+        var expiresAt = now.AddMinutes(tokenSettings.AccessTokenMinutes);
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id),
@@ -76,12 +75,12 @@ public sealed class AuthController(
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var token = new JwtSecurityToken(
-            issuer: configuration["Authentication:Issuer"] ?? "LogiTrack",
-            audience: configuration["Authentication:Audience"] ?? "LogiTrack.Api",
+            issuer: tokenSettings.Issuer,
+            audience: tokenSettings.Audience,
             claims: claims,
             notBefore: now.UtcDateTime,
             expires: expiresAt.UtcDateTime,
-            signingCredentials: signingCredentials);
+            signingCredentials: tokenSettings.SigningCredentials);
 
         return Ok(new LoginResponse(new JwtSecurityTokenHandler().WriteToken(token), "Bearer", expiresAt));
     }
