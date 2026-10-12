@@ -1,6 +1,4 @@
-using System.Text.Json.Serialization;
 using LogiTrack.Data;
-using LogiTrack.Endpoints;
 using LogiTrack.Middleware;
 using LogiTrack.Services;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
-builder.Services.AddValidation();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
-builder.Services.ConfigureHttpJsonOptions(options =>
-    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 builder.Services.AddDbContext<LogiTrackDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("LogiTrack")));
 builder.Services.AddScoped<IOrderManagementService, OrderManagementService>();
@@ -36,8 +34,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapFulfillmentCenterEndpoints();
-app.MapInventoryEndpoints();
-app.MapOrderEndpoints();
+app.MapControllers();
 
 app.Run();

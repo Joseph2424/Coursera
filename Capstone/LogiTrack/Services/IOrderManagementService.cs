@@ -5,6 +5,7 @@ namespace LogiTrack.Services;
 public interface IOrderManagementService
 {
     Task<IReadOnlyList<FulfillmentCenterResponse>> GetFulfillmentCentersAsync(CancellationToken cancellationToken);
+    Task<FulfillmentCenterResponse?> GetFulfillmentCenterAsync(int id, CancellationToken cancellationToken);
     Task<FulfillmentCenterResponse> CreateFulfillmentCenterAsync(CreateFulfillmentCenterRequest request, CancellationToken cancellationToken);
     Task<IReadOnlyList<InventoryItemResponse>> GetInventoryAsync(CancellationToken cancellationToken);
     Task<InventoryItemResponse?> GetInventoryItemAsync(int id, CancellationToken cancellationToken);

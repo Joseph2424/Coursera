@@ -12,6 +12,13 @@ public sealed class OrderManagementService(LogiTrackDbContext dbContext) : IOrde
             .Select(center => new FulfillmentCenterResponse(center.Id, center.Code, center.Name, center.Location))
             .ToListAsync(cancellationToken);
 
+    public async Task<FulfillmentCenterResponse?> GetFulfillmentCenterAsync(int id, CancellationToken cancellationToken)
+    {
+        var center = await dbContext.FulfillmentCenters.AsNoTracking()
+            .SingleOrDefaultAsync(row => row.Id == id, cancellationToken);
+        return center is null ? null : new FulfillmentCenterResponse(center.Id, center.Code, center.Name, center.Location);
+    }
+
     public async Task<FulfillmentCenterResponse> CreateFulfillmentCenterAsync(CreateFulfillmentCenterRequest request, CancellationToken cancellationToken)
     {
         var center = new FulfillmentCenter { Code = request.Code.Trim(), Name = request.Name.Trim(), Location = request.Location.Trim() };
