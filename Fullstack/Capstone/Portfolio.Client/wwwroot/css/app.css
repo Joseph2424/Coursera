@@ -699,7 +699,18 @@ button, input, select, textarea {
     font-size: 10px;
 }
 
+.signed-in-email {
+    max-width: 220px;
+    overflow: hidden;
+    color: var(--ink);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-overflow: ellipsis;
+}
+
 @media (max-width: 460px) {
     .auth-screen { min-height: calc(100vh - 60px); padding: 32px 20px; }
     .auth-panel h1 { font-size: 34px; }
+    .signed-in-email { max-width: 120px; }
 }

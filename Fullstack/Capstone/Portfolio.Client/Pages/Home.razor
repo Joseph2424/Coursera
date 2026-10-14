@@ -1,13 +1,15 @@
 ﻿@page "/"
+@implements IDisposable
 @inject IPortfolioApiService PortfolioApi
+@inject IAuthStateService AuthState
 
 <PageTitle>Portfolio workspace</PageTitle>
 
-@if (isLoading)
+@if (AuthState.IsLoading)
 {
 	<div class="auth-loading"><span class="connection-dot"></span> CHECKING SESSION</div>
 }
-else if (isAuthenticated)
+else if (AuthState.IsAuthenticated)
 {
 <div class="dashboard">
 	<section class="intro-bar">
@@ -19,6 +21,7 @@ else if (isAuthenticated)
 		<div class="connection-state">
 			<span class="connection-dot"></span>
 			API CONNECTED
+			<span class="signed-in-email">@AuthState.CurrentUser?.Email</span>
 			<button class="quiet-button sign-out-button" type="button" @onclick="Logout">Sign out</button>
 		</div>
 	</section>
@@ -261,8 +264,6 @@ else
 	private int? _editingProjectId;
 	private bool _userFormOpen;
 	private bool _projectFormOpen;
-	private bool isLoading = true;
-	private bool isAuthenticated;
 	private bool isRegisterMode = true;
 	private bool isSubmitting;
 	private AuthForm authForm = new();
@@ -271,12 +272,12 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
+		AuthState.StateChanged += HandleAuthStateChanged;
 		try
 		{
-			var currentUser = await PortfolioApi.GetCurrentUserAsync();
-			if (currentUser is not null)
+			await AuthState.InitializeAsync();
+			if (AuthState.IsAuthenticated)
 			{
-				isAuthenticated = true;
 				await LoadPortfolioData();
 			}
 		}
@@ -287,10 +288,6 @@ else
 		catch (HttpRequestException)
 		{
 			errorMessage = "Could not reach the API. Start Portfolio.Api and refresh this page.";
-		}
-		finally
-		{
-			isLoading = false;
 		}
 	}
 
@@ -312,14 +309,13 @@ else
 		{
 			if (isRegisterMode)
 			{
-				await PortfolioApi.RegisterAsync(authForm);
+				await AuthState.RegisterAsync(authForm);
 			}
 			else
 			{
-				await PortfolioApi.LoginAsync(authForm);
+				await AuthState.LoginAsync(authForm);
 			}
 
-			isAuthenticated = true;
 			await LoadPortfolioData();
 		}
 		catch (PortfolioApiException exception)
@@ -345,12 +341,15 @@ else
 
 	private async Task Logout()
 	{
-		await PortfolioApi.LogoutAsync();
-		isAuthenticated = false;
+		await AuthState.LogoutAsync();
 		_users = [];
 		_projects = [];
 		_selectedUser = null;
 	}
+
+	private void HandleAuthStateChanged() => _ = InvokeAsync(StateHasChanged);
+
+	public void Dispose() => AuthState.StateChanged -= HandleAuthStateChanged;
 
 	private async Task SelectUser(ChangeEventArgs args)
 	{

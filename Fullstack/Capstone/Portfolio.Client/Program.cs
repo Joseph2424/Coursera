@@ -12,5 +12,6 @@ builder.Services.AddScoped(sp => new HttpClient
 	BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7021/")
 });
 builder.Services.AddScoped<IPortfolioApiService, PortfolioApiService>();
+builder.Services.AddScoped<IAuthStateService, AuthStateService>();
 
 await builder.Build().RunAsync();

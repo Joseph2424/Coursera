@@ -35,6 +35,7 @@ Development uses a randomly generated, process-local JWT signing key, so restart
 - Store profiles, projects, and reusable skills in SQLite.
 - Cache successful GET responses in memory for 30 seconds; writes evict affected cache tags.
 - Call the API through the scoped `IPortfolioApiService` registered in the Blazor client.
+- Keep the signed-in account in the scoped `IAuthStateService`; session restoration and login/logout changes notify subscribed components.
 - Register and log in with ASP.NET Core Identity; the client keeps the bearer token in session storage.
 
 ## API

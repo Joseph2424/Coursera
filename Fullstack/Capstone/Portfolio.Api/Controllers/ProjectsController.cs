@@ -26,15 +26,26 @@ public sealed class ProjectsController(
             return Unauthorized();
         }
 
-        var query = database.Projects.Include(project => project.PortfolioUser).AsQueryable();
-        query = query.Where(project => project.PortfolioUser.OwnerId == ownerId);
+        var query = database.Projects
+            .AsNoTracking()
+            .Where(project => project.PortfolioUser.OwnerId == ownerId);
         if (portfolioUserId.HasValue)
         {
             query = query.Where(project => project.PortfolioUserId == portfolioUserId.Value);
         }
 
-        var projects = await query.OrderByDescending(project => project.Id).ToListAsync();
-        return Ok(projects.Select(ToDto).ToArray());
+        var projects = await query
+            .OrderByDescending(project => project.Id)
+            .Select(project => new ProjectDto(
+                project.Id,
+                project.PortfolioUserId,
+                project.PortfolioUser.FullName,
+                project.Title,
+                project.Description,
+                project.ProjectUrl,
+                project.Status))
+            .ToListAsync();
+        return Ok(projects);
     }
 
     [HttpPost]

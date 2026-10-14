@@ -28,13 +28,21 @@ public sealed class PortfolioUsersController(
         }
 
         var users = await database.PortfolioUsers
-            .Include(user => user.SkillLinks)
-                .ThenInclude(link => link.Skill)
+            .AsNoTracking()
             .Where(user => user.OwnerId == ownerId)
             .OrderBy(user => user.FullName)
+            .Select(user => new PortfolioUserDto(
+                user.Id,
+                user.FullName,
+                user.Email,
+                user.Bio,
+                user.SkillLinks
+                    .Select(link => link.Skill.Name)
+                    .OrderBy(name => name)
+                    .ToList()))
             .ToListAsync();
 
-        return Ok(users.Select(ToDto).ToArray());
+        return Ok(users);
     }
 
     [HttpGet("{id:int}")]
@@ -48,11 +56,20 @@ public sealed class PortfolioUsersController(
         }
 
         var user = await database.PortfolioUsers
-            .Include(item => item.SkillLinks)
-                .ThenInclude(link => link.Skill)
-            .FirstOrDefaultAsync(item => item.Id == id && item.OwnerId == ownerId);
+            .AsNoTracking()
+            .Where(item => item.Id == id && item.OwnerId == ownerId)
+            .Select(item => new PortfolioUserDto(
+                item.Id,
+                item.FullName,
+                item.Email,
+                item.Bio,
+                item.SkillLinks
+                    .Select(link => link.Skill.Name)
+                    .OrderBy(name => name)
+                    .ToList()))
+            .FirstOrDefaultAsync();
 
-        return user is null ? NotFound() : Ok(ToDto(user));
+        return user is null ? NotFound() : Ok(user);
     }
 
     [HttpPost]
@@ -146,12 +163,20 @@ public sealed class PortfolioUsersController(
             .Where(name => name.Length <= 80)
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .Take(20);
+        var requestedNames = names.ToArray();
+        if (requestedNames.Length == 0)
+        {
+            return new List<Skill>();
+        }
+
+        var existingSkills = await database.Skills
+            .Where(skill => requestedNames.Contains(skill.Name))
+            .ToDictionaryAsync(skill => skill.Name, StringComparer.OrdinalIgnoreCase);
         var skills = new List<Skill>();
 
-        foreach (var name in names)
+        foreach (var name in requestedNames)
         {
-            var skill = await database.Skills.FirstOrDefaultAsync(item => item.Name == name);
-            if (skill is null)
+            if (!existingSkills.TryGetValue(name, out var skill))
             {
                 skill = new Skill { Name = name };
                 database.Skills.Add(skill);
