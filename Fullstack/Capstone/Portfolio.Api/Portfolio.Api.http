@@ -83,4 +83,8 @@ Content-Type: application/json
 	"status": "Completed"
 }
 
+### Delete a project
+DELETE {{baseUrl}}/api/projects/1
+Authorization: Bearer {{token}}
+
 ###

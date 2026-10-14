@@ -87,6 +87,26 @@ public sealed class PortfolioApiService(HttpClient httpClient, IJSRuntime jsRunt
             Content = JsonContent.Create(form)
         }, cancellationToken);
 
+    public async Task DeleteProjectAsync(int id, CancellationToken cancellationToken = default)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Delete, $"api/projects/{id}");
+        var token = await ReadTokenAsync(cancellationToken);
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+
+        using var response = await httpClient.SendAsync(request, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+        {
+            var details = await response.Content.ReadAsStringAsync(cancellationToken);
+            var message = string.IsNullOrWhiteSpace(details)
+                ? $"The API request failed with status {(int)response.StatusCode}."
+                : details;
+            throw new PortfolioApiException(response.StatusCode, message);
+        }
+    }
+
     private async Task<AuthResponseDto> AuthenticateAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var response = await SendAsync<AuthResponseDto>(request, cancellationToken, includeToken: false);

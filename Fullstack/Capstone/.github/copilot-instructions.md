@@ -9,4 +9,4 @@
 - Keep Identity account ownership filters and `[Authorize]` requirements aligned across portfolio and project controller actions.
 - Keep CORS origins aligned with the local client launch profiles and API base URL in `Portfolio.Client/wwwroot/appsettings.json`.
 - Keep output-cache tags and invalidation aligned when changing controller read or write actions.
-- Validate changes with `dotnet build PortfolioTracker.sln`.
+- Validate changes with `dotnet build PortfolioTracker.sln` and run E2E coverage with `dotnet test PortfolioTracker.sln`.

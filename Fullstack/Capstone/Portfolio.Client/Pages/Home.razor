@@ -2,6 +2,7 @@
 @implements IDisposable
 @inject IPortfolioApiService PortfolioApi
 @inject IAuthStateService AuthState
+@inject IJSRuntime JS
 
 <PageTitle>Portfolio workspace</PageTitle>
 
@@ -187,7 +188,10 @@ else if (AuthState.IsAuthenticated)
 									<a class="project-link" href="@project.ProjectUrl" target="_blank" rel="noopener noreferrer">Open project <span aria-hidden="true">&#8599;</span></a>
 								}
 							</div>
-							<button class="edit-project" type="button" aria-label="Edit @project.Title" @onclick="() => StartEditProject(project)">Edit</button>
+							<div class="project-actions">
+								<button class="edit-project" type="button" aria-label="Edit @project.Title" @onclick="() => StartEditProject(project)">Edit</button>
+								<button class="delete-project" type="button" aria-label="Delete @project.Title" @onclick="() => DeleteProject(project)">Delete</button>
+							</div>
 						</article>
 					}
 				</div>
@@ -488,6 +492,30 @@ else
 
 		_projectFormOpen = false;
 		successMessage = "Project saved.";
+	}
+
+	private async Task DeleteProject(ProjectDto project)
+	{
+		if (!await JS.InvokeAsync<bool>("confirm", $"Delete project \"{project.Title}\"?"))
+		{
+			return;
+		}
+
+		ClearMessages();
+		try
+		{
+			await PortfolioApi.DeleteProjectAsync(project.Id);
+			_projects.RemoveAll(item => item.Id == project.Id);
+			successMessage = "Project deleted.";
+		}
+		catch (PortfolioApiException exception)
+		{
+			errorMessage = exception.Message;
+		}
+		catch (HttpRequestException)
+		{
+			errorMessage = "Could not reach the API. Start Portfolio.Api and try again.";
+		}
 	}
 
 	private async Task LoadProjects()

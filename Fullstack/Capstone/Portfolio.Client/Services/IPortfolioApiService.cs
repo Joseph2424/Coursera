@@ -23,4 +23,6 @@ public interface IPortfolioApiService
     Task<ProjectDto> CreateProjectAsync(int portfolioUserId, ProjectForm form, CancellationToken cancellationToken = default);
 
     Task<ProjectDto> UpdateProjectAsync(int id, ProjectForm form, CancellationToken cancellationToken = default);
+
+    Task DeleteProjectAsync(int id, CancellationToken cancellationToken = default);
 }

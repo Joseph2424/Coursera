@@ -30,7 +30,7 @@ Development uses a randomly generated, process-local JWT signing key, so restart
 
 - Create and update portfolio profiles with name, email, bio, and comma-separated skills.
 - View profiles and skills belonging to the signed-in account.
-- Create, list, and update projects for the selected profile.
+- Create, list, update, and delete projects for the selected profile.
 - Validate profile and project input in the client and API.
 - Store profiles, projects, and reusable skills in SQLite.
 - Cache successful GET responses in memory for 30 seconds; writes evict affected cache tags.
@@ -50,6 +50,7 @@ Development uses a randomly generated, process-local JWT signing key, so restart
 - `GET /api/projects?portfolioUserId={id}`
 - `POST /api/projects?portfolioUserId={id}`
 - `PUT /api/projects/{id}`
+- `DELETE /api/projects/{id}`
 - Development OpenAPI document: `/openapi/v1.json`
 
 All portfolio and project routes require a valid bearer token and are scoped to its account. Registration enforces a 10-character minimum with uppercase, lowercase, and numeric characters. Login failures are locked out after five attempts for 15 minutes. Do not expose the development signing key or use Development settings in production.
@@ -63,3 +64,15 @@ Controller GET responses use ASP.NET Core output caching, keyed by authenticated
 ```sh
 dotnet build PortfolioTracker.sln
 ```
+
+## End-to-end tests
+
+The NUnit Playwright test starts the API and Blazor client on their development HTTPS ports and uses a temporary SQLite database. Stop any manually running app processes before running it.
+
+```sh
+dotnet build PortfolioTracker.sln
+./e2e/Portfolio.E2E.Tests/bin/Debug/net10.0/.playwright/node/darwin-arm64/node ./e2e/Portfolio.E2E.Tests/bin/Debug/net10.0/.playwright/package/cli.js install chromium
+dotnet test PortfolioTracker.sln --no-build
+```
+
+On Windows or Linux, install Chromium with `pwsh e2e/Portfolio.E2E.Tests/bin/Debug/net10.0/playwright.ps1 install chromium` instead. The same suite runs in GitHub Actions on pushes, pull requests, and manual dispatch. It covers registration/login, profile and skill updates, project create/update/delete, anonymous 401 responses, and cross-account 404 responses.

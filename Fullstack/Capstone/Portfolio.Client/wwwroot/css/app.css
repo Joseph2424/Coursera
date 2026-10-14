@@ -694,6 +694,27 @@ button, input, select, textarea {
     margin: 0 0 18px;
 }
 
+.project-row {
+    grid-template-columns: 42px minmax(0, 1fr) 104px;
+}
+
+.project-actions {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.delete-project {
+    border: 0;
+    padding: 6px 0;
+    background: transparent;
+    color: #a64a39;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
 .sign-out-button {
     padding: 0;
     font-size: 10px;
@@ -713,4 +734,5 @@ button, input, select, textarea {
     .auth-screen { min-height: calc(100vh - 60px); padding: 32px 20px; }
     .auth-panel h1 { font-size: 34px; }
     .signed-in-email { max-width: 120px; }
+    .project-row { grid-template-columns: 30px minmax(0, 1fr) 86px; }
 }

@@ -111,6 +111,29 @@ public sealed class ProjectsController(
         return Ok(ToDto(project));
     }
 
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    {
+        var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (ownerId is null)
+        {
+            return Unauthorized();
+        }
+
+        var project = await database.Projects
+            .FirstOrDefaultAsync(item => item.Id == id && item.PortfolioUser.OwnerId == ownerId, cancellationToken);
+        if (project is null)
+        {
+            return NotFound();
+        }
+
+        database.Projects.Remove(project);
+        await database.SaveChangesAsync(cancellationToken);
+        await outputCacheStore.EvictByTagAsync("projects", cancellationToken);
+
+        return NoContent();
+    }
+
     private static string? Clean(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private static ProjectDto ToDto(Project project) => new(
