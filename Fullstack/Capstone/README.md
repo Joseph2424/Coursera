@@ -1,6 +1,6 @@
 # Portfolio Tracker
 
-A local portfolio and project tracking application with a Blazor WebAssembly client, ASP.NET Core API, and SQLite database using EF Core.
+A local portfolio and project tracking application with a Blazor WebAssembly client, ASP.NET Core controller API, and SQLite database using EF Core.
 
 ## Requirements
 
@@ -31,6 +31,8 @@ The API creates `portfolio.db` on startup using EF Core `EnsureCreated`. The dat
 - Create, list, and update projects for the selected profile.
 - Validate profile and project input in the client and API.
 - Store profiles, projects, and reusable skills in SQLite.
+- Cache successful GET responses in memory for 30 seconds; writes evict affected cache tags.
+- Call the API through the scoped `IPortfolioApiService` registered in the Blazor client.
 
 ## API
 
@@ -44,6 +46,8 @@ The API creates `portfolio.db` on startup using EF Core `EnsureCreated`. The dat
 - Development OpenAPI document: `/openapi/v1.json`
 
 The EF Core model uses a one-to-many relationship from portfolio users to projects and a many-to-many relationship between users and skills. Profile emails and skill names are unique case-insensitively.
+
+Controller GET responses use ASP.NET Core output caching. Project responses vary by `portfolioUserId`; profile or project changes evict affected cached responses. The cache is process-local and is cleared when the API restarts.
 
 ## Build
 

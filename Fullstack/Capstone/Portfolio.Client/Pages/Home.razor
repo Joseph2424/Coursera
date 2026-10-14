@@ -1,5 +1,5 @@
 ﻿@page "/"
-@inject HttpClient Http
+@inject IPortfolioApiService PortfolioApi
 
 <PageTitle>Portfolio workspace</PageTitle>
 
@@ -219,12 +219,16 @@
 	{
 		try
 		{
-			_users = await Http.GetFromJsonAsync<List<PortfolioUserDto>>("api/portfolio-users") ?? [];
+			_users = await PortfolioApi.GetUsersAsync();
 			_selectedUser = _users.FirstOrDefault();
 			if (_selectedUser is not null)
 			{
 				await LoadProjects();
 			}
+		}
+		catch (PortfolioApiException exception)
+		{
+			errorMessage = exception.Message;
 		}
 		catch (HttpRequestException)
 		{
@@ -277,20 +281,21 @@
 	private async Task SaveUser()
 	{
 		ClearMessages();
-		using var response = _userForm.Id.HasValue
-			? await Http.PutAsJsonAsync($"api/portfolio-users/{_userForm.Id}", _userForm)
-			: await Http.PostAsJsonAsync("api/portfolio-users", _userForm);
-
-		if (!response.IsSuccessStatusCode)
+		PortfolioUserDto savedUser;
+		try
 		{
-			errorMessage = await ReadError(response);
+			savedUser = _userForm.Id is int id
+				? await PortfolioApi.UpdateUserAsync(id, _userForm)
+				: await PortfolioApi.CreateUserAsync(_userForm);
+		}
+		catch (PortfolioApiException exception)
+		{
+			errorMessage = exception.Message;
 			return;
 		}
-
-		var savedUser = await response.Content.ReadFromJsonAsync<PortfolioUserDto>();
-		if (savedUser is null)
+		catch (HttpRequestException)
 		{
-			errorMessage = "The API returned an empty portfolio response.";
+			errorMessage = "Could not reach the API. Start Portfolio.Api and try again.";
 			return;
 		}
 
@@ -342,20 +347,21 @@
 		}
 
 		ClearMessages();
-		using var response = _editingProjectId.HasValue
-			? await Http.PutAsJsonAsync($"api/projects/{_editingProjectId}", _projectForm)
-			: await Http.PostAsJsonAsync($"api/projects?portfolioUserId={_selectedUser.Id}", _projectForm);
-
-		if (!response.IsSuccessStatusCode)
+		ProjectDto savedProject;
+		try
 		{
-			errorMessage = await ReadError(response);
+			savedProject = _editingProjectId is int id
+				? await PortfolioApi.UpdateProjectAsync(id, _projectForm)
+				: await PortfolioApi.CreateProjectAsync(_selectedUser.Id, _projectForm);
+		}
+		catch (PortfolioApiException exception)
+		{
+			errorMessage = exception.Message;
 			return;
 		}
-
-		var savedProject = await response.Content.ReadFromJsonAsync<ProjectDto>();
-		if (savedProject is null)
+		catch (HttpRequestException)
 		{
-			errorMessage = "The API returned an empty project response.";
+			errorMessage = "Could not reach the API. Start Portfolio.Api and try again.";
 			return;
 		}
 
@@ -375,9 +381,24 @@
 
 	private async Task LoadProjects()
 	{
-		_projects = _selectedUser is null
-			? []
-			: await Http.GetFromJsonAsync<List<ProjectDto>>($"api/projects?portfolioUserId={_selectedUser.Id}") ?? [];
+		if (_selectedUser is null)
+		{
+			_projects = [];
+			return;
+		}
+
+		try
+		{
+			_projects = await PortfolioApi.GetProjectsAsync(_selectedUser.Id);
+		}
+		catch (PortfolioApiException exception)
+		{
+			errorMessage = exception.Message;
+		}
+		catch (HttpRequestException)
+		{
+			errorMessage = "Could not reach the API. Start Portfolio.Api and try again.";
+		}
 	}
 
 	private static string GetInitials(string fullName) => string.Join("", fullName
@@ -386,12 +407,6 @@
 		.Select(part => char.ToUpperInvariant(part[0])));
 
 	private static string StatusClass(string status) => status.ToLowerInvariant().Replace(' ', '-');
-
-	private static async Task<string> ReadError(HttpResponseMessage response)
-	{
-		var body = await response.Content.ReadAsStringAsync();
-		return string.IsNullOrWhiteSpace(body) ? $"Request failed ({(int)response.StatusCode})." : body;
-	}
 
 	private void ClearMessages()
 	{
