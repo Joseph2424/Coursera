@@ -1,11 +1,51 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Microsoft.JSInterop;
 using Portfolio.Client.Models;
 
 namespace Portfolio.Client.Services;
 
-public sealed class PortfolioApiService(HttpClient httpClient) : IPortfolioApiService
+public sealed class PortfolioApiService(HttpClient httpClient, IJSRuntime jsRuntime) : IPortfolioApiService
 {
+    private const string TokenStorageKey = "portfolio.access-token";
+
+    public Task<AuthResponseDto> RegisterAsync(AuthForm form, CancellationToken cancellationToken = default) =>
+        AuthenticateAsync(new HttpRequestMessage(HttpMethod.Post, "api/identity/register")
+        {
+            Content = JsonContent.Create(form)
+        }, cancellationToken);
+
+    public Task<AuthResponseDto> LoginAsync(AuthForm form, CancellationToken cancellationToken = default) =>
+        AuthenticateAsync(new HttpRequestMessage(HttpMethod.Post, "api/identity/login")
+        {
+            Content = JsonContent.Create(form)
+        }, cancellationToken);
+
+    public async Task<AuthenticatedUserDto?> GetCurrentUserAsync(CancellationToken cancellationToken = default)
+    {
+        var token = await ReadTokenAsync(cancellationToken);
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            return null;
+        }
+
+        try
+        {
+            return await SendAsync<AuthenticatedUserDto>(
+                new HttpRequestMessage(HttpMethod.Get, "api/identity/me"),
+                cancellationToken);
+        }
+        catch (PortfolioApiException exception) when (exception.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            await LogoutAsync(cancellationToken);
+            return null;
+        }
+    }
+
+    public async Task LogoutAsync(CancellationToken cancellationToken = default) =>
+        await jsRuntime.InvokeVoidAsync("sessionStorage.removeItem", cancellationToken, TokenStorageKey);
+
     public Task<List<PortfolioUserDto>> GetUsersAsync(CancellationToken cancellationToken = default) =>
         SendAsync<List<PortfolioUserDto>>(new HttpRequestMessage(HttpMethod.Get, "api/portfolio-users"), cancellationToken);
 
@@ -47,8 +87,27 @@ public sealed class PortfolioApiService(HttpClient httpClient) : IPortfolioApiSe
             Content = JsonContent.Create(form)
         }, cancellationToken);
 
-    private async Task<T> SendAsync<T>(HttpRequestMessage request, CancellationToken cancellationToken)
+    private async Task<AuthResponseDto> AuthenticateAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
+        var response = await SendAsync<AuthResponseDto>(request, cancellationToken, includeToken: false);
+        await jsRuntime.InvokeVoidAsync("sessionStorage.setItem", cancellationToken, TokenStorageKey, response.AccessToken);
+        return response;
+    }
+
+    private async Task<T> SendAsync<T>(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken,
+        bool includeToken = true)
+    {
+        if (includeToken)
+        {
+            var token = await ReadTokenAsync(cancellationToken);
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+        }
+
         using (request)
         using (var response = await httpClient.SendAsync(request, cancellationToken))
         {
@@ -65,6 +124,9 @@ public sealed class PortfolioApiService(HttpClient httpClient) : IPortfolioApiSe
                 ?? throw new PortfolioApiException(HttpStatusCode.InternalServerError, "The API returned an empty response.");
         }
     }
+
+    private ValueTask<string?> ReadTokenAsync(CancellationToken cancellationToken) =>
+        jsRuntime.InvokeAsync<string?>("sessionStorage.getItem", cancellationToken, TokenStorageKey);
 }
 
 public sealed class PortfolioApiException(HttpStatusCode statusCode, string message) : Exception(message)

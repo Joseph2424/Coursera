@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +11,7 @@ using Portfolio.Api.Models;
 namespace Portfolio.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/portfolio-users")]
 public sealed class PortfolioUsersController(
     PortfolioDbContext database,
@@ -18,8 +21,16 @@ public sealed class PortfolioUsersController(
     [OutputCache(PolicyName = "PortfolioUsersRead")]
     public async Task<ActionResult<IReadOnlyList<PortfolioUserDto>>> GetAll()
     {
+        var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (ownerId is null)
+        {
+            return Unauthorized();
+        }
+
         var users = await database.PortfolioUsers
-            .Include(user => user.Skills)
+            .Include(user => user.SkillLinks)
+                .ThenInclude(link => link.Skill)
+            .Where(user => user.OwnerId == ownerId)
             .OrderBy(user => user.FullName)
             .ToListAsync();
 
@@ -30,9 +41,16 @@ public sealed class PortfolioUsersController(
     [OutputCache(PolicyName = "PortfolioUsersRead")]
     public async Task<ActionResult<PortfolioUserDto>> GetById(int id)
     {
+        var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (ownerId is null)
+        {
+            return Unauthorized();
+        }
+
         var user = await database.PortfolioUsers
-            .Include(item => item.Skills)
-            .FirstOrDefaultAsync(item => item.Id == id);
+            .Include(item => item.SkillLinks)
+                .ThenInclude(link => link.Skill)
+            .FirstOrDefaultAsync(item => item.Id == id && item.OwnerId == ownerId);
 
         return user is null ? NotFound() : Ok(ToDto(user));
     }
@@ -40,20 +58,32 @@ public sealed class PortfolioUsersController(
     [HttpPost]
     public async Task<ActionResult<PortfolioUserDto>> Create(SavePortfolioUserRequest request)
     {
+        var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (ownerId is null)
+        {
+            return Unauthorized();
+        }
+
         if (await database.PortfolioUsers.AnyAsync(user => user.Email == request.Email.Trim()))
         {
             return Conflict(new { error = "A portfolio already uses that email address." });
         }
 
+        var skills = await ResolveSkills(request.SkillsCsv);
         var user = new PortfolioUser
         {
             FullName = request.FullName.Trim(),
             Email = request.Email.Trim(),
             Bio = Clean(request.Bio),
-            Skills = await ResolveSkills(request.SkillsCsv)
+            OwnerId = ownerId
         };
 
         database.PortfolioUsers.Add(user);
+        foreach (var skill in skills)
+        {
+            database.PortfolioUserSkills.Add(new PortfolioUserSkill { PortfolioUser = user, Skill = skill });
+        }
+
         await database.SaveChangesAsync();
         await outputCacheStore.EvictByTagAsync("portfolio-users", HttpContext.RequestAborted);
 
@@ -63,9 +93,16 @@ public sealed class PortfolioUsersController(
     [HttpPut("{id:int}")]
     public async Task<ActionResult<PortfolioUserDto>> Update(int id, SavePortfolioUserRequest request)
     {
+        var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (ownerId is null)
+        {
+            return Unauthorized();
+        }
+
         var user = await database.PortfolioUsers
-            .Include(item => item.Skills)
-            .FirstOrDefaultAsync(item => item.Id == id);
+            .Include(item => item.SkillLinks)
+                .ThenInclude(link => link.Skill)
+            .FirstOrDefaultAsync(item => item.Id == id && item.OwnerId == ownerId);
         if (user is null)
         {
             return NotFound();
@@ -79,7 +116,21 @@ public sealed class PortfolioUsersController(
         user.FullName = request.FullName.Trim();
         user.Email = request.Email.Trim();
         user.Bio = Clean(request.Bio);
-        user.Skills = await ResolveSkills(request.SkillsCsv);
+        var skills = await ResolveSkills(request.SkillsCsv);
+        var skillNames = skills.Select(skill => skill.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var linksToRemove = user.SkillLinks
+            .Where(link => !skillNames.Contains(link.Skill.Name))
+            .ToList();
+        database.PortfolioUserSkills.RemoveRange(linksToRemove);
+
+        var existingSkillNames = user.SkillLinks
+            .Where(link => !linksToRemove.Contains(link))
+            .Select(link => link.Skill.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        foreach (var skill in skills.Where(skill => !existingSkillNames.Contains(skill.Name)))
+        {
+            database.PortfolioUserSkills.Add(new PortfolioUserSkill { PortfolioUser = user, Skill = skill });
+        }
 
         await database.SaveChangesAsync();
         await outputCacheStore.EvictByTagAsync("portfolio-users", HttpContext.RequestAborted);
@@ -119,5 +170,5 @@ public sealed class PortfolioUsersController(
         user.FullName,
         user.Email,
         user.Bio,
-        user.Skills.Select(skill => skill.Name).OrderBy(name => name).ToArray());
+        user.SkillLinks.Select(link => link.Skill.Name).OrderBy(name => name).ToArray());
 }

@@ -1,6 +1,86 @@
-@Portfolio.Api_HostAddress = http://localhost:5023
+@baseUrl = https://localhost:7021
+@token = paste-access-token-here
+@portfolioUserId = 1
 
-GET {{Portfolio.Api_HostAddress}}/weatherforecast/
+### Register an account
+POST {{baseUrl}}/api/identity/register
+Content-Type: application/json
+
+{
+	"email": "developer@example.test",
+	"password": "SecurePass123"
+}
+
+### Log in
+POST {{baseUrl}}/api/identity/login
+Content-Type: application/json
+
+{
+	"email": "developer@example.test",
+	"password": "SecurePass123"
+}
+
+### Get the current account
+GET {{baseUrl}}/api/identity/me
+Authorization: Bearer {{token}}
 Accept: application/json
+
+### List the current account's portfolios
+GET {{baseUrl}}/api/portfolio-users
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Create a portfolio
+POST {{baseUrl}}/api/portfolio-users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+	"fullName": "Developer Example",
+	"email": "developer@example.test",
+	"bio": "Software developer",
+	"skillsCsv": "C#, Blazor, SQLite"
+}
+
+### Update a portfolio
+PUT {{baseUrl}}/api/portfolio-users/{{portfolioUserId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+	"fullName": "Developer Example Updated",
+	"email": "developer@example.test",
+	"bio": "Updated profile",
+	"skillsCsv": "C#, ASP.NET Core"
+}
+
+### List projects for a portfolio
+GET {{baseUrl}}/api/projects?portfolioUserId={{portfolioUserId}}
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Create a project
+POST {{baseUrl}}/api/projects?portfolioUserId={{portfolioUserId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+	"title": "Portfolio site",
+	"description": "Personal portfolio",
+	"projectUrl": "https://example.test",
+	"status": "In progress"
+}
+
+### Update a project
+PUT {{baseUrl}}/api/projects/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+	"title": "Portfolio site v2",
+	"description": "Updated portfolio project",
+	"projectUrl": "https://example.test",
+	"status": "Completed"
+}
 
 ###

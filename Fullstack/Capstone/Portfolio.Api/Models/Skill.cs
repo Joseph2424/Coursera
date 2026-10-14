@@ -10,5 +10,5 @@ public sealed class Skill
     [MaxLength(80)]
     public string Name { get; set; } = string.Empty;
 
-    public ICollection<PortfolioUser> PortfolioUsers { get; set; } = new List<PortfolioUser>();
+    public ICollection<PortfolioUserSkill> PortfolioUserLinks { get; set; } = new List<PortfolioUserSkill>();
 }

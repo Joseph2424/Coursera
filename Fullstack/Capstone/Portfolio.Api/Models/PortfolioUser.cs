@@ -17,7 +17,11 @@ public sealed class PortfolioUser
     [MaxLength(1200)]
     public string? Bio { get; set; }
 
+    public string? OwnerId { get; set; }
+
+    public ApplicationUser? Owner { get; set; }
+
     public ICollection<Project> Projects { get; set; } = new List<Project>();
 
-    public ICollection<Skill> Skills { get; set; } = new List<Skill>();
+    public ICollection<PortfolioUserSkill> SkillLinks { get; set; } = new List<PortfolioUserSkill>();
 }

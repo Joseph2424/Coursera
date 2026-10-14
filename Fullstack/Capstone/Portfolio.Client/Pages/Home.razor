@@ -3,6 +3,12 @@
 
 <PageTitle>Portfolio workspace</PageTitle>
 
+@if (isLoading)
+{
+	<div class="auth-loading"><span class="connection-dot"></span> CHECKING SESSION</div>
+}
+else if (isAuthenticated)
+{
 <div class="dashboard">
 	<section class="intro-bar">
 		<div>
@@ -12,7 +18,8 @@
 		</div>
 		<div class="connection-state">
 			<span class="connection-dot"></span>
-			@(isLoading ? "CONNECTING" : errorMessage is null ? "API CONNECTED" : "API OFFLINE")
+			API CONNECTED
+			<button class="quiet-button sign-out-button" type="button" @onclick="Logout">Sign out</button>
 		</div>
 	</section>
 
@@ -201,6 +208,49 @@
 		<span>@DateTime.Now.Year <span>/</span> LOCAL WORKSPACE</span>
 	</footer>
 </div>
+}
+else
+{
+	<div class="auth-screen">
+		<section class="auth-panel" aria-labelledby="auth-heading">
+			<p class="eyebrow">PORTFOLIO STUDIO <span>/</span> SECURE ACCESS</p>
+			<h1 id="auth-heading">Your work, in one place.</h1>
+			<p class="auth-copy">Sign in to manage your portfolio and projects.</p>
+
+			<div class="auth-tabs" role="group" aria-label="Account action">
+				<button class="auth-tab @(isRegisterMode ? "active" : string.Empty)" type="button" aria-pressed="@isRegisterMode" @onclick="() => SetAuthMode(true)">Register</button>
+				<button class="auth-tab @(!isRegisterMode ? "active" : string.Empty)" type="button" aria-pressed="@(!isRegisterMode)" @onclick="() => SetAuthMode(false)">Login</button>
+			</div>
+
+			@if (!string.IsNullOrWhiteSpace(errorMessage))
+			{
+				<div class="notice notice-error auth-error" role="alert">@errorMessage</div>
+			}
+
+			<EditForm Model="authForm" OnValidSubmit="SubmitAuth" class="editor-form auth-form">
+				<DataAnnotationsValidator />
+				<div class="form-field">
+					<label for="auth-email">EMAIL</label>
+					<InputText id="auth-email" type="email" autocomplete="email" class="field-control" @bind-Value="authForm.Email" />
+					<ValidationMessage For="@(() => authForm.Email)" />
+				</div>
+				<div class="form-field">
+					<label for="auth-password">PASSWORD</label>
+					<InputText id="auth-password" type="password" autocomplete="@(isRegisterMode ? "new-password" : "current-password")" class="field-control" @bind-Value="authForm.Password" />
+					<ValidationMessage For="@(() => authForm.Password)" />
+					@if (isRegisterMode)
+					{
+						<span class="password-hint">At least 10 characters, including uppercase, lowercase, and a number.</span>
+					}
+				</div>
+				<button class="primary-button auth-submit" type="submit" disabled="@isSubmitting">
+					@(isSubmitting ? "Please wait..." : isRegisterMode ? "Create account" : "Sign in")
+					<span aria-hidden="true">&#8599;</span>
+				</button>
+			</EditForm>
+		</section>
+	</div>
+}
 
 @code {
 	private List<PortfolioUserDto> _users = [];
@@ -212,6 +262,10 @@
 	private bool _userFormOpen;
 	private bool _projectFormOpen;
 	private bool isLoading = true;
+	private bool isAuthenticated;
+	private bool isRegisterMode = true;
+	private bool isSubmitting;
+	private AuthForm authForm = new();
 	private string? errorMessage;
 	private string? successMessage;
 
@@ -219,11 +273,11 @@
 	{
 		try
 		{
-			_users = await PortfolioApi.GetUsersAsync();
-			_selectedUser = _users.FirstOrDefault();
-			if (_selectedUser is not null)
+			var currentUser = await PortfolioApi.GetCurrentUserAsync();
+			if (currentUser is not null)
 			{
-				await LoadProjects();
+				isAuthenticated = true;
+				await LoadPortfolioData();
 			}
 		}
 		catch (PortfolioApiException exception)
@@ -238,6 +292,64 @@
 		{
 			isLoading = false;
 		}
+	}
+
+	private async Task LoadPortfolioData()
+	{
+		_users = await PortfolioApi.GetUsersAsync();
+		_selectedUser = _users.FirstOrDefault();
+		if (_selectedUser is not null)
+		{
+			await LoadProjects();
+		}
+	}
+
+	private async Task SubmitAuth()
+	{
+		ClearMessages();
+		isSubmitting = true;
+		try
+		{
+			if (isRegisterMode)
+			{
+				await PortfolioApi.RegisterAsync(authForm);
+			}
+			else
+			{
+				await PortfolioApi.LoginAsync(authForm);
+			}
+
+			isAuthenticated = true;
+			await LoadPortfolioData();
+		}
+		catch (PortfolioApiException exception)
+		{
+			errorMessage = exception.Message;
+		}
+		catch (HttpRequestException)
+		{
+			errorMessage = "Could not reach the API. Try again when it is available.";
+		}
+		finally
+		{
+			isSubmitting = false;
+		}
+	}
+
+	private void SetAuthMode(bool register)
+	{
+		isRegisterMode = register;
+		authForm = new AuthForm();
+		ClearMessages();
+	}
+
+	private async Task Logout()
+	{
+		await PortfolioApi.LogoutAsync();
+		isAuthenticated = false;
+		_users = [];
+		_projects = [];
+		_selectedUser = null;
 	}
 
 	private async Task SelectUser(ChangeEventArgs args)

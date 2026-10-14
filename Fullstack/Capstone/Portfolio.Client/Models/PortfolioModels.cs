@@ -18,6 +18,19 @@ public sealed record ProjectDto(
     string? ProjectUrl,
     string Status);
 
+public sealed record AuthenticatedUserDto(string Id, string Email);
+
+public sealed record AuthResponseDto(string AccessToken, DateTimeOffset ExpiresAt, AuthenticatedUserDto User);
+
+public sealed class AuthForm
+{
+    [Required, EmailAddress, StringLength(254)]
+    public string Email { get; set; } = string.Empty;
+
+    [Required, StringLength(128, MinimumLength = 10)]
+    public string Password { get; set; } = string.Empty;
+}
+
 public sealed class PortfolioUserForm
 {
     public int? Id { get; set; }

@@ -22,20 +22,26 @@ dotnet run --project Portfolio.Client --launch-profile https
 
 Open `https://localhost:7261`. The client calls the API at `https://localhost:7021`. If the browser does not trust the local HTTPS certificate, trust the .NET development certificate for this machine and restart both processes.
 
-The API creates `portfolio.db` on startup using EF Core `EnsureCreated`. The database is local development data; back it up before removing it. The API currently has no authentication and should not be exposed to the public internet.
+The API applies EF Core migrations on startup. Existing databases created by the earlier `EnsureCreated` setup are recognized and upgraded without dropping portfolio tables; back up `Portfolio.Api/portfolio.db` before upgrading. Existing profiles keep their data but remain unowned and hidden until assigned to an account.
+
+Development uses a randomly generated, process-local JWT signing key, so restarting the API invalidates existing access tokens. Before running outside Development, set `Jwt__Key` through a secret manager or environment variable to a random secret of at least 32 bytes. `Jwt__Issuer`, `Jwt__Audience`, and `Jwt__LifetimeMinutes` can also be configured.
 
 ## Features
 
 - Create and update portfolio profiles with name, email, bio, and comma-separated skills.
-- View multiple profiles and their skills.
+- View profiles and skills belonging to the signed-in account.
 - Create, list, and update projects for the selected profile.
 - Validate profile and project input in the client and API.
 - Store profiles, projects, and reusable skills in SQLite.
 - Cache successful GET responses in memory for 30 seconds; writes evict affected cache tags.
 - Call the API through the scoped `IPortfolioApiService` registered in the Blazor client.
+- Register and log in with ASP.NET Core Identity; the client keeps the bearer token in session storage.
 
 ## API
 
+- `POST /api/identity/register` (anonymous)
+- `POST /api/identity/login` (anonymous)
+- `GET /api/identity/me` (bearer token required)
 - `GET /api/portfolio-users`
 - `GET /api/portfolio-users/{id}`
 - `POST /api/portfolio-users`
@@ -45,9 +51,11 @@ The API creates `portfolio.db` on startup using EF Core `EnsureCreated`. The dat
 - `PUT /api/projects/{id}`
 - Development OpenAPI document: `/openapi/v1.json`
 
+All portfolio and project routes require a valid bearer token and are scoped to its account. Registration enforces a 10-character minimum with uppercase, lowercase, and numeric characters. Login failures are locked out after five attempts for 15 minutes. Do not expose the development signing key or use Development settings in production.
+
 The EF Core model uses a one-to-many relationship from portfolio users to projects and a many-to-many relationship between users and skills. Profile emails and skill names are unique case-insensitively.
 
-Controller GET responses use ASP.NET Core output caching. Project responses vary by `portfolioUserId`; profile or project changes evict affected cached responses. The cache is process-local and is cleared when the API restarts.
+Controller GET responses use ASP.NET Core output caching, keyed by authenticated account. Project responses also vary by `portfolioUserId`; profile or project changes evict affected cached responses. The cache is process-local and is cleared when the API restarts.
 
 ## Build
 

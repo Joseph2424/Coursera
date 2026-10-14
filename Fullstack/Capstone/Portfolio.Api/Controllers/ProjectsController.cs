@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +10,7 @@ using Portfolio.Api.Models;
 namespace Portfolio.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/projects")]
 public sealed class ProjectsController(
     PortfolioDbContext database,
@@ -17,7 +20,14 @@ public sealed class ProjectsController(
     [OutputCache(PolicyName = "ProjectsRead")]
     public async Task<ActionResult<IReadOnlyList<ProjectDto>>> GetAll([FromQuery] int? portfolioUserId)
     {
+        var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (ownerId is null)
+        {
+            return Unauthorized();
+        }
+
         var query = database.Projects.Include(project => project.PortfolioUser).AsQueryable();
+        query = query.Where(project => project.PortfolioUser.OwnerId == ownerId);
         if (portfolioUserId.HasValue)
         {
             query = query.Where(project => project.PortfolioUserId == portfolioUserId.Value);
@@ -32,7 +42,14 @@ public sealed class ProjectsController(
         [FromQuery] int portfolioUserId,
         SaveProjectRequest request)
     {
-        var user = await database.PortfolioUsers.FindAsync(portfolioUserId);
+        var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (ownerId is null)
+        {
+            return Unauthorized();
+        }
+
+        var user = await database.PortfolioUsers
+            .FirstOrDefaultAsync(item => item.Id == portfolioUserId && item.OwnerId == ownerId);
         if (user is null)
         {
             return NotFound(new { error = "The portfolio user was not found." });
@@ -58,9 +75,15 @@ public sealed class ProjectsController(
     [HttpPut("{id:int}")]
     public async Task<ActionResult<ProjectDto>> Update(int id, SaveProjectRequest request)
     {
+        var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (ownerId is null)
+        {
+            return Unauthorized();
+        }
+
         var project = await database.Projects
             .Include(item => item.PortfolioUser)
-            .FirstOrDefaultAsync(item => item.Id == id);
+            .FirstOrDefaultAsync(item => item.Id == id && item.PortfolioUser.OwnerId == ownerId);
         if (project is null)
         {
             return NotFound();
