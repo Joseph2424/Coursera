@@ -1,0 +1,7 @@
+**/bin/
+**/obj/
+.vs/
+.DS_Store
+Portfolio.Api/portfolio.db
+Portfolio.Api/portfolio.db-shm
+Portfolio.Api/portfolio.db-wal

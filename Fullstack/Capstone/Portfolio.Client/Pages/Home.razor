@@ -1,0 +1,402 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<PageTitle>Portfolio workspace</PageTitle>
+
+<div class="dashboard">
+	<section class="intro-bar">
+		<div>
+			<p class="eyebrow">PORTFOLIO STUDIO <span>/</span> MANAGEMENT</p>
+			<h1>Projects, in progress.</h1>
+			<p class="intro-copy">Keep your profile and the work behind it in one place.</p>
+		</div>
+		<div class="connection-state">
+			<span class="connection-dot"></span>
+			@(isLoading ? "CONNECTING" : errorMessage is null ? "API CONNECTED" : "API OFFLINE")
+		</div>
+	</section>
+
+	@if (!string.IsNullOrWhiteSpace(errorMessage))
+	{
+		<div class="notice notice-error" role="alert">@errorMessage</div>
+	}
+	@if (!string.IsNullOrWhiteSpace(successMessage))
+	{
+		<div class="notice notice-success" role="status">@successMessage</div>
+	}
+
+	<div class="workspace-grid">
+		<section class="profile-section" aria-labelledby="profile-heading">
+			<div class="section-heading">
+				<div>
+					<p class="eyebrow">01 <span>/</span> IDENTITY</p>
+					<h2 id="profile-heading">Portfolio profile</h2>
+				</div>
+				@if (_selectedUser is not null && !_userFormOpen)
+				{
+					<button class="quiet-button" type="button" @onclick="StartEditUser">Edit profile</button>
+				}
+			</div>
+
+			@if (_users.Count > 1 && !_userFormOpen)
+			{
+				<label class="select-label" for="portfolio-select">ACTIVE PORTFOLIO</label>
+				<select id="portfolio-select" class="field-control profile-select" value="@_selectedUser?.Id" @onchange="SelectUser">
+					@foreach (var user in _users)
+					{
+						<option value="@user.Id">@user.FullName</option>
+					}
+				</select>
+			}
+
+			@if (_userFormOpen)
+			{
+				<EditForm Model="_userForm" OnValidSubmit="SaveUser" class="editor-form">
+					<DataAnnotationsValidator />
+					<div class="form-field">
+						<label for="full-name">FULL NAME</label>
+						<InputText id="full-name" class="field-control" @bind-Value="_userForm.FullName" />
+						<ValidationMessage For="@(() => _userForm.FullName)" />
+					</div>
+					<div class="form-field">
+						<label for="email">EMAIL</label>
+						<InputText id="email" type="email" class="field-control" @bind-Value="_userForm.Email" />
+						<ValidationMessage For="@(() => _userForm.Email)" />
+					</div>
+					<div class="form-field">
+						<label for="bio">BIO</label>
+						<InputTextArea id="bio" class="field-control field-textarea" @bind-Value="_userForm.Bio" />
+						<ValidationMessage For="@(() => _userForm.Bio)" />
+					</div>
+					<div class="form-field">
+						<label for="skills">SKILLS <span>COMMA SEPARATED</span></label>
+						<InputText id="skills" class="field-control" @bind-Value="_userForm.SkillsCsv" />
+						<ValidationMessage For="@(() => _userForm.SkillsCsv)" />
+					</div>
+					<div class="form-actions">
+						<button class="primary-button" type="submit">Save profile <span aria-hidden="true">&#8599;</span></button>
+						<button class="quiet-button" type="button" @onclick="CancelUserEdit">Cancel</button>
+					</div>
+				</EditForm>
+			}
+			else if (_selectedUser is not null)
+			{
+				<div class="profile-detail">
+					<div class="profile-monogram">@GetInitials(_selectedUser.FullName)</div>
+					<h3>@_selectedUser.FullName</h3>
+					<a class="email-link" href="mailto:@_selectedUser.Email">@_selectedUser.Email</a>
+					<p class="profile-bio">@(string.IsNullOrWhiteSpace(_selectedUser.Bio) ? "No bio added yet." : _selectedUser.Bio)</p>
+					<div class="skill-list">
+						@if (_selectedUser.Skills.Count > 0)
+						{
+							@foreach (var skill in _selectedUser.Skills)
+							{
+								<span class="skill-tag">@skill</span>
+							}
+						}
+						else
+						{
+							<span class="muted-copy">No skills listed</span>
+						}
+					</div>
+				</div>
+			}
+			else
+			{
+				<div class="empty-profile">
+					<span class="empty-index">P / 01</span>
+					<p>Start with the person behind the work.</p>
+					<button class="primary-button" type="button" @onclick="StartNewUser">Create portfolio <span aria-hidden="true">&#8599;</span></button>
+				</div>
+			}
+		</section>
+
+		<section class="projects-section" aria-labelledby="projects-heading">
+			<div class="section-heading projects-heading">
+				<div>
+					<p class="eyebrow">02 <span>/</span> SELECTED WORK</p>
+					<h2 id="projects-heading">Projects <span class="count">@_projects.Count.ToString("00")</span></h2>
+				</div>
+				@if (_selectedUser is not null && !_projectFormOpen)
+				{
+					<button class="primary-button" type="button" @onclick="StartNewProject">New project <span aria-hidden="true">+</span></button>
+				}
+			</div>
+
+			@if (_projectFormOpen)
+			{
+				<EditForm Model="_projectForm" OnValidSubmit="SaveProject" class="editor-form project-editor">
+					<DataAnnotationsValidator />
+					<div class="form-field">
+						<label for="project-title">PROJECT TITLE</label>
+						<InputText id="project-title" class="field-control" @bind-Value="_projectForm.Title" />
+						<ValidationMessage For="@(() => _projectForm.Title)" />
+					</div>
+					<div class="form-field">
+						<label for="project-description">DESCRIPTION</label>
+						<InputTextArea id="project-description" class="field-control field-textarea" @bind-Value="_projectForm.Description" />
+						<ValidationMessage For="@(() => _projectForm.Description)" />
+					</div>
+					<div class="form-row">
+						<div class="form-field">
+							<label for="project-url">PROJECT URL</label>
+							<InputText id="project-url" type="url" class="field-control" @bind-Value="_projectForm.ProjectUrl" />
+							<ValidationMessage For="@(() => _projectForm.ProjectUrl)" />
+						</div>
+						<div class="form-field">
+							<label for="project-status">STATUS</label>
+							<InputSelect id="project-status" class="field-control" @bind-Value="_projectForm.Status">
+								<option>In progress</option>
+								<option>Completed</option>
+								<option>Planned</option>
+								<option>On hold</option>
+							</InputSelect>
+						</div>
+					</div>
+					<div class="form-actions">
+						<button class="primary-button" type="submit">Save project <span aria-hidden="true">&#8599;</span></button>
+						<button class="quiet-button" type="button" @onclick="CancelProjectEdit">Cancel</button>
+					</div>
+				</EditForm>
+			}
+			else if (_projects.Count > 0)
+			{
+				<div class="project-list">
+					@foreach (var project in _projects)
+					{
+						<article class="project-row" @key="project.Id">
+							<div class="project-number">@project.Id.ToString("00")</div>
+							<div class="project-copy">
+								<div class="project-title-line">
+									<h3>@project.Title</h3>
+									<span class="status-tag @StatusClass(project.Status)">@project.Status</span>
+								</div>
+								<p>@(string.IsNullOrWhiteSpace(project.Description) ? "No description added." : project.Description)</p>
+								@if (!string.IsNullOrWhiteSpace(project.ProjectUrl))
+								{
+									<a class="project-link" href="@project.ProjectUrl" target="_blank" rel="noopener noreferrer">Open project <span aria-hidden="true">&#8599;</span></a>
+								}
+							</div>
+							<button class="edit-project" type="button" aria-label="Edit @project.Title" @onclick="() => StartEditProject(project)">Edit</button>
+						</article>
+					}
+				</div>
+			}
+			else
+			{
+				<div class="empty-projects">
+					<span class="empty-index">0@(_selectedUser is null ? "0" : "1")</span>
+					<p>@(_selectedUser is null ? "Create a portfolio profile to begin." : "Your next project belongs here.")</p>
+					@if (_selectedUser is not null)
+					{
+						<button class="text-button" type="button" @onclick="StartNewProject">Add your first project <span aria-hidden="true">&#8599;</span></button>
+					}
+				</div>
+			}
+		</section>
+	</div>
+
+	<footer class="page-footer">
+		<span>FIELDNOTES <span>/</span> PORTFOLIO TRACKER</span>
+		<span>@DateTime.Now.Year <span>/</span> LOCAL WORKSPACE</span>
+	</footer>
+</div>
+
+@code {
+	private List<PortfolioUserDto> _users = [];
+	private List<ProjectDto> _projects = [];
+	private PortfolioUserDto? _selectedUser;
+	private PortfolioUserForm _userForm = new();
+	private ProjectForm _projectForm = new();
+	private int? _editingProjectId;
+	private bool _userFormOpen;
+	private bool _projectFormOpen;
+	private bool isLoading = true;
+	private string? errorMessage;
+	private string? successMessage;
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			_users = await Http.GetFromJsonAsync<List<PortfolioUserDto>>("api/portfolio-users") ?? [];
+			_selectedUser = _users.FirstOrDefault();
+			if (_selectedUser is not null)
+			{
+				await LoadProjects();
+			}
+		}
+		catch (HttpRequestException)
+		{
+			errorMessage = "Could not reach the API. Start Portfolio.Api and refresh this page.";
+		}
+		finally
+		{
+			isLoading = false;
+		}
+	}
+
+	private async Task SelectUser(ChangeEventArgs args)
+	{
+		if (int.TryParse(args.Value?.ToString(), out var id))
+		{
+			_selectedUser = _users.FirstOrDefault(user => user.Id == id);
+			_projectFormOpen = false;
+			await LoadProjects();
+		}
+	}
+
+	private void StartNewUser()
+	{
+		ClearMessages();
+		_userForm = new PortfolioUserForm();
+		_userFormOpen = true;
+	}
+
+	private void StartEditUser()
+	{
+		if (_selectedUser is null)
+		{
+			return;
+		}
+
+		ClearMessages();
+		_userForm = new PortfolioUserForm
+		{
+			Id = _selectedUser.Id,
+			FullName = _selectedUser.FullName,
+			Email = _selectedUser.Email,
+			Bio = _selectedUser.Bio ?? string.Empty,
+			SkillsCsv = string.Join(", ", _selectedUser.Skills)
+		};
+		_userFormOpen = true;
+	}
+
+	private void CancelUserEdit() => _userFormOpen = false;
+
+	private async Task SaveUser()
+	{
+		ClearMessages();
+		using var response = _userForm.Id.HasValue
+			? await Http.PutAsJsonAsync($"api/portfolio-users/{_userForm.Id}", _userForm)
+			: await Http.PostAsJsonAsync("api/portfolio-users", _userForm);
+
+		if (!response.IsSuccessStatusCode)
+		{
+			errorMessage = await ReadError(response);
+			return;
+		}
+
+		var savedUser = await response.Content.ReadFromJsonAsync<PortfolioUserDto>();
+		if (savedUser is null)
+		{
+			errorMessage = "The API returned an empty portfolio response.";
+			return;
+		}
+
+		var existingIndex = _users.FindIndex(user => user.Id == savedUser.Id);
+		if (existingIndex >= 0)
+		{
+			_users[existingIndex] = savedUser;
+		}
+		else
+		{
+			_users.Add(savedUser);
+		}
+
+		_selectedUser = savedUser;
+		_userFormOpen = false;
+		successMessage = "Portfolio profile saved.";
+		await LoadProjects();
+	}
+
+	private void StartNewProject()
+	{
+		ClearMessages();
+		_editingProjectId = null;
+		_projectForm = new ProjectForm();
+		_projectFormOpen = true;
+	}
+
+	private void StartEditProject(ProjectDto project)
+	{
+		ClearMessages();
+		_editingProjectId = project.Id;
+		_projectForm = new ProjectForm
+		{
+			Title = project.Title,
+			Description = project.Description ?? string.Empty,
+			ProjectUrl = project.ProjectUrl ?? string.Empty,
+			Status = project.Status
+		};
+		_projectFormOpen = true;
+	}
+
+	private void CancelProjectEdit() => _projectFormOpen = false;
+
+	private async Task SaveProject()
+	{
+		if (_selectedUser is null)
+		{
+			return;
+		}
+
+		ClearMessages();
+		using var response = _editingProjectId.HasValue
+			? await Http.PutAsJsonAsync($"api/projects/{_editingProjectId}", _projectForm)
+			: await Http.PostAsJsonAsync($"api/projects?portfolioUserId={_selectedUser.Id}", _projectForm);
+
+		if (!response.IsSuccessStatusCode)
+		{
+			errorMessage = await ReadError(response);
+			return;
+		}
+
+		var savedProject = await response.Content.ReadFromJsonAsync<ProjectDto>();
+		if (savedProject is null)
+		{
+			errorMessage = "The API returned an empty project response.";
+			return;
+		}
+
+		var existingIndex = _projects.FindIndex(project => project.Id == savedProject.Id);
+		if (existingIndex >= 0)
+		{
+			_projects[existingIndex] = savedProject;
+		}
+		else
+		{
+			_projects.Insert(0, savedProject);
+		}
+
+		_projectFormOpen = false;
+		successMessage = "Project saved.";
+	}
+
+	private async Task LoadProjects()
+	{
+		_projects = _selectedUser is null
+			? []
+			: await Http.GetFromJsonAsync<List<ProjectDto>>($"api/projects?portfolioUserId={_selectedUser.Id}") ?? [];
+	}
+
+	private static string GetInitials(string fullName) => string.Join("", fullName
+		.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+		.Take(2)
+		.Select(part => char.ToUpperInvariant(part[0])));
+
+	private static string StatusClass(string status) => status.ToLowerInvariant().Replace(' ', '-');
+
+	private static async Task<string> ReadError(HttpResponseMessage response)
+	{
+		var body = await response.Content.ReadAsStringAsync();
+		return string.IsNullOrWhiteSpace(body) ? $"Request failed ({(int)response.StatusCode})." : body;
+	}
+
+	private void ClearMessages()
+	{
+		errorMessage = null;
+		successMessage = null;
+	}
+}
+
